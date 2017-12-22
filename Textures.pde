@@ -1,8 +1,12 @@
 class Textures{
   HashMap<String, SpriteSheet> spriteSheets = new HashMap<String, SpriteSheet>();
-  HashMap<String, AnimatedSheet> animSheets = new HashMap<String, AnimatedSheet>();  
+  HashMap<String, AnimatedSheet> animSheets = new HashMap<String, AnimatedSheet>();
+  PImage mainMenuBG;
   
   Textures(){
+    //Load the bgImage
+    mainMenuBG = loadImage("img/mainmenu.jpg");
+    
     //Objects
     animSheets.put("decor", new AnimatedSheet(SIZE, "Objects/Decor0.png", "Objects/Decor1.png"));
     animSheets.put("door", new AnimatedSheet(SIZE, "Objects/Door0.png", "Objects/Door1.png"));

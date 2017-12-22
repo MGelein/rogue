@@ -39,6 +39,19 @@ class Button implements IMouse, IRender{
     highlightTiles[9] = textures.get("gui.box_" + highlight);
   }
   
+  int getWidth(){
+    return dim.x * SIZE;
+  }
+  
+  int getHeight(){
+    return dim.y * SIZE;
+  }
+  
+  /** Centers this button on the x axis*/
+  void centerX(){
+    pos.x = floor((stage.width - getWidth()) * 0.5f);
+  }
+  
   void render(PGraphics g){
     //Special case for 1x1 buttons
     if(dim.x == 1 && dim.y == 1){
@@ -106,7 +119,7 @@ class TextButton extends Button{
     super(x, y, type);
     this.text = text;
     dim.y = 2;
-    recalc = true;
+    updateDim(stage);
   }
   
   void updateDim(PGraphics g){
@@ -130,10 +143,29 @@ class TextButton extends Button{
   }
 }
 
+class BigTextButton extends TextButton{
+  BigTextButton(int x, int y, int type, String text){
+    super(x, y, type, text);
+    dim.y = 3;
+  }
+  
+  /** Before calc for dimensions, set font size*/
+  void updateDim(PGraphics g){
+    g.textSize(16);
+    super.updateDim(g);
+    off.y += SIZE * 0.66f;
+    g.textSize(8);
+  }
+  
+  void render(PGraphics g){
+    g.textSize(16);
+    super.render(g);
+    g.textSize(8);
+  }
+}
+
 /** Button that is only 1 tile tall*/
 class SmallTextButton extends TextButton{
-  String text;
-  boolean recalc = false;
   SmallTextButton(int x, int y, int type, String text){
     super(x, y, type, text);
     smallTile = true;

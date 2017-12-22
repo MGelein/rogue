@@ -83,18 +83,62 @@ The main menu class
 class MainMenu extends GameState{
   
   MainMenu(){
-    TileButton health = new TileButton(16, 16, RED, textures.get("gui.hp_heart_full"));
-    TileButton stamina = new TileButton(32, 16, GREEN, textures.get("gui.stamina_heart_full"));
-    TileButton mana = new TileButton(48, 16, BLUE, textures.get("gui.mana_heart_full"));
-    SmallTextButton textA = new SmallTextButton(64,16, RED, "Small button");
-    TextButton textB = new TextButton(16, 32, YELLOW, "TextButton");
-    FancyButton fb = new FancyButton(16,64, BLUE, "Fancy", textures.get("gui.question_mark_orange"));
-    SmallFancyButton sfb = new SmallFancyButton(16, 96, RED, "Small & Fancy", textures.get("gui.question_mark_white"));
-    addRender(health, stamina, mana, textB, textA, fb, sfb);
-    addMouse(health, stamina, mana, textB, textA, fb, sfb);
+    //New game button
+    BigTextButton newGameButton = new BigTextButton(0, 112, GREEN, "New Game");
+    newGameButton.centerX();
+    
+    //Dugeon editor button
+    BigTextButton editorButton = new BigTextButton(0, 176, BLUE, "Dungeon Editor");
+    editorButton.centerX();
+    
+    //Close button
+    BigTextButton closeButton = new BigTextButton(0, 240, RED, "Exit");
+    closeButton.addMouseHandler(new MouseHandler(){
+      void mouseDown(int button){ exit();}
+    });
+    closeButton.centerX();
+    
+    int bottomY = stage.height - 40;
+    final FancyButton musicButton = new FancyButton(8, bottomY, YELLOW, "Music: ON", textures.get("music.trumpet"));
+    musicButton.addMouseHandler(new MouseHandler(){
+      void mouseDown(int button){
+        musicButton.text = (musicButton.text == "Music: ON") ? "Music: OFF" : "Music: ON";
+        musicButton.recalc = true;
+      }
+    });
+    
+    addRender(newGameButton, editorButton, closeButton, musicButton);
+    addMouse(newGameButton, editorButton, closeButton, musicButton);
   }
   
   void render(PGraphics g){
-    super.render(g);
+    //Paint the BG
+    g.tint(255, 100);
+    g.image(textures.mainMenuBG, 0, 0, g.width, g.height);
+    g.tint(255);
+    
+    //Draw the title lettering
+    drawTitle(g);
+    
+    
+    //Finally paint the elements
+    super.render(g);   
+  }
+  
+  void drawTitle(PGraphics g){
+    g.textSize(36);//Set size to title size
+    String title = "Rogue 2D";
+    float titleWidth = g.textWidth(title);
+    float posX = (g.width - titleWidth) * 0.5f;
+    float posY = 100;
+    int shadowOffset = 3;
+    g.fill(0);//Black bg for the text, sort of dropshadow
+    g.text(title, posX + shadowOffset, posY + shadowOffset);
+    g.fill(255, 0, 0);
+    g.text(title, posX, posY);
+    g.fill(255);
+    g.text(title.substring(0, 5), posX, posY);
+    g.fill(255);
+    g.textSize(8);//Reset to normal size
   }
 }

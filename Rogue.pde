@@ -13,6 +13,7 @@ PGraphics stage;
 
 void setup(){
   size(1280, 720);
+  //fullScreen();
   noSmooth();
   background(0);
   
@@ -20,7 +21,8 @@ void setup(){
   registry.load("textures.ini", "tex");
   
   //Create the canvas to draw on
-  stage = createGraphics(floor(width / SCL), floor(height / SCL));
+  stage = createGraphics(floor(1280 / 2), floor(720 / 2));
+  SCL = width / stage.width;
   
   //Load all texture objects
   textures = new Textures();
