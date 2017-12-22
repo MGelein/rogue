@@ -49,9 +49,24 @@ void draw(){
 }
 
 /**
+RENDER & UPDATE interface
+**/
+interface IRender{
+  void render(PGraphics g);
+}
+interface IUpdate{
+  void update();
+}
+
+/**
 MOUSE Input handling
 **/
 
+interface IMouse{
+  boolean isHighlighted();
+  void mouseDown();
+  void mouseUp();
+}
 void mousePressed(){ currentState.mouseDown(floor(mouseX / SCL), floor(mouseY / SCL)); }
 void mouseReleased(){ currentState.mouseUp(floor(mouseX / SCL), floor(mouseY / SCL)); }
 

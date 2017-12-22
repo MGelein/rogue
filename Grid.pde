@@ -1,4 +1,4 @@
-class Grid{
+class Grid implements IRender{
   
   private GridCell[] cells;
   private int cols;
@@ -41,7 +41,7 @@ class Grid{
   }
 }
 
-class GridCell{
+class GridCell implements IRender{
   int x;
   int y;
   int size = SIZE;
@@ -67,7 +67,7 @@ class GridCell{
 }
 
 /** Every single object on one tile is a gridObject*/
-class GridObject{
+class GridObject implements IRender{
   int x;
   int y;
   PImage tex;

@@ -1,8 +1,8 @@
-class Button{
+class Button implements IMouse, IRender{
   PImage[] normalTiles = new PImage[10];
   PImage[] highlightTiles = new PImage[10];
   Int2D pos;
-  Int2D dim = new Int2D(2, 2);
+  Int2D dim = new Int2D(1, 1);
   
   Button(int x, int y, int type){
     pos = new Int2D(x, y);
@@ -38,6 +38,13 @@ class Button{
   }
   
   void render(PGraphics g){
+    //Special case for 1x1 buttons
+    if(dim.x == 1 && dim.y == 1){
+      renderTile(g, 9, 0, 0);
+      return;
+    }
+    
+    //In all other cases, check for each location how to build the button
     for(int x = 0; x < dim.x; x++){
       for(int y = 0; y < dim.y; y++){
         if(x == 0 && y == 0) renderTile(g, 0, x, y);                    //TL
@@ -67,7 +74,8 @@ class Button{
     );
   }
   
-  void click(){}
+  void mouseDown(){};
+  void mouseUp(){};
 }
 
 /**
@@ -94,7 +102,7 @@ class TextButton extends Button{
   
   void render(PGraphics g){
     super.render(g);
-    //Check if we need to recαlc width
+    //Check if we need to recalc width
     if(recalc) updateDim(g);
     
     if(isHighlighted()){ //If highlighted, also draw a text shadow
@@ -103,5 +111,35 @@ class TextButton extends Button{
       g.fill(255);
     }
     g.text(text, pos.x + off.x, pos.y + off.y);
+  }
+}
+
+/** Works for the icons used in the game (8 x 8)*/
+class IconButton extends Button{
+  PImage img;  
+  
+  IconButton(int x, int y, int type, PImage image){
+    super(x, y, type);
+    img = image;
+  }
+  
+  void render(PGraphics g){
+    super.render(g);    
+    g.image(img, pos.x - 4, pos.y - 4);
+  }
+}
+
+/** A tile button also resizes its image to 8x8*/
+class TileButton extends Button{
+  PImage img;
+  TileButton(int x, int y, int type, PImage image){
+    super(x, y, type);
+    img = image;
+    img.resize(8, 8);
+  }
+  
+  void render(PGraphics g){
+    super.render(g);
+    g.image(img, pos.x + 4, pos.y + 4);
   }
 }
