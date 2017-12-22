@@ -86,7 +86,13 @@ class MainMenu extends GameState{
     TileButton health = new TileButton(16, 16, RED, textures.get("gui.hp_heart_full"));
     TileButton stamina = new TileButton(32, 16, GREEN, textures.get("gui.stamina_heart_full"));
     TileButton mana = new TileButton(48, 16, BLUE, textures.get("gui.mana_heart_full"));
-    addRender(health, stamina, mana);
-    addMouse(health, stamina, mana);
+    SmallTextButton textA = new SmallTextButton(64,16, RED, "Small button");
+    TextButton textB = new TextButton(16, 32, YELLOW, "TextButton");
+    addRender(health, stamina, mana, textB, textA);
+    addMouse(health, stamina, mana, textB, textA);
+  }
+  
+  void render(PGraphics g){
+    super.render(g);
   }
 }

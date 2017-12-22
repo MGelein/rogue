@@ -96,6 +96,9 @@ Contains integer coordinates for textures and grids
 class Int2D{
   int x;
   int y;
+  Int2D(){
+    x = y = 0;
+  }
   Int2D(int x, int y){
     this.x = x;
     this.y = y;

@@ -3,6 +3,7 @@ class Button implements IMouse, IRender{
   PImage[] highlightTiles = new PImage[10];
   Int2D pos;
   Int2D dim = new Int2D(1, 1);
+  boolean smallTile = false;//used to make small text buttons
   
   Button(int x, int y, int type){
     pos = new Int2D(x, y);
@@ -67,11 +68,21 @@ class Button implements IMouse, IRender{
   }
   
   void renderTile(PGraphics g, int tileIndex, int x, int y){
-    g.image(
-      (isHighlighted() ? highlightTiles[tileIndex] : normalTiles[tileIndex]),
-      pos.x + (x * SIZE),
-      pos.y + (y * SIZE)
-    );
+    if(!smallTile){
+      g.image(
+        (isHighlighted() ? highlightTiles[tileIndex] : normalTiles[tileIndex]),
+        pos.x + (x * SIZE),
+        pos.y + (y * SIZE)
+      );
+    }else{
+      //PImage tile = (isHighlighted() ? highlightTiles[tileIndex] : normalTiles[tileIndex]);
+      //PImage halfTile = tile.get(0, (y == 0 ? 0 : 8), 16, 8);
+      g.image(
+        (isHighlighted() ? highlightTiles[tileIndex] : normalTiles[tileIndex]).get(0, (y == 0 ? 0 : 8), 16, 8),
+        pos.x + (x * SIZE),
+        pos.y + (y * SIZE * 0.5f)
+      );
+    }
   }
   
   void mouseDown(){};
@@ -89,6 +100,7 @@ class TextButton extends Button{
   TextButton(int x, int y, int type, String text){
     super(x, y, type);
     this.text = text;
+    dim.y = 2;
     recalc = true;
   }
   
@@ -97,7 +109,6 @@ class TextButton extends Button{
     dim.x = floor((g.textWidth(text) / SIZE) + 2);
     off.x = ((dim.x * SIZE) - g.textWidth(text)) * 0.5f;
     off.y = (dim.y * 0.66f * SIZE);
-    
   }
   
   void render(PGraphics g){
@@ -111,6 +122,28 @@ class TextButton extends Button{
       g.fill(255);
     }
     g.text(text, pos.x + off.x, pos.y + off.y);
+  }
+}
+
+/** Button that is only 1 tile tall*/
+class SmallTextButton extends TextButton{
+  String text;
+  boolean recalc = false;
+  SmallTextButton(int x, int y, int type, String text){
+    super(x, y, type, text);
+    smallTile = true;
+  }
+  
+  boolean isHighlighted(){
+    float x = mouseX / SCL;
+    float y = mouseY / SCL;
+    return x > pos.x && x < pos.x + (dim.x * SIZE) && y > pos.y && y < pos.y + SIZE;
+  }
+  
+  /* Intercept call to update dim, because this button is different*/
+  void updateDim(PGraphics g){
+    super.updateDim(g);
+    off.y = SIZE - 3;
   }
 }
 
