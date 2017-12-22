@@ -49,10 +49,10 @@ The main menu class
 **/
 class MainMenu extends GameState{
   
-  Button b;
+  TextButton b;
   
   MainMenu(){
-    b = new Button(100, 100, "Testbutton");
+    b = new TextButton(100, 100, GREEN, "Testing with a long button text");
   }
   
   
@@ -66,6 +66,7 @@ class MainMenu extends GameState{
   
   /** Called when the mouse is pressed. Passed coordinates are translated using game scale*/
   void mouseDown(int x, int y){
+    if(b.isHighlighted()) b.click();
   }
   
   /** Called when the mouse is released. Passed coordinates are translated using game scale*/

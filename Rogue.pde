@@ -1,5 +1,9 @@
 int SCL = 2;
 int SIZE = 16;
+int RED = 0, HP = 0;
+int BLUE = 1, MANA = 1;
+int GREEN = 2, STAMINA = 2;
+int YELLOW = 3, GOLD = 3;
 
 Registry registry = new Registry();
 GameState currentState;

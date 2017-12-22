@@ -75,6 +75,10 @@ class Textures{
   
   /** If the texture described by the provided id is in the animated list or not */
   boolean isAnimated(String s){
+    if(s.indexOf(".") == -1) {
+      println("Invalid texture name, no sheet name: " + s);
+      return false;
+    }
     return animSheets.containsKey(s.substring(0, s.indexOf(".")).trim().toLowerCase());
   }
   
