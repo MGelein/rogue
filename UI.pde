@@ -4,6 +4,7 @@ class Button implements IMouse, IRender{
   Int2D pos;
   Int2D dim = new Int2D(1, 1);
   boolean smallTile = false;//used to make small text buttons
+  MouseHandler mouseHandler = null;//Used to handle mouse events for this button
   
   Button(int x, int y, int type){
     pos = new Int2D(x, y);
@@ -61,6 +62,10 @@ class Button implements IMouse, IRender{
     }
   }
   
+  void addMouseHandler(MouseHandler h){
+    mouseHandler = h;
+  }
+  
   boolean isHighlighted(){
     float x = mouseX / SCL;
     float y = mouseY / SCL;
@@ -85,8 +90,8 @@ class Button implements IMouse, IRender{
     }
   }
   
-  void mouseDown(){};
-  void mouseUp(){};
+  void mouseDown(){ if(mouseHandler != null) mouseHandler.mouseDown(mouseButton);};
+  void mouseUp(){ if(mouseHandler != null) mouseHandler.mouseUp(mouseButton);};
 }
 
 /**
@@ -174,5 +179,48 @@ class TileButton extends Button{
   void render(PGraphics g){
     super.render(g);
     g.image(img, pos.x + 4, pos.y + 4);
+  }
+}
+
+/** Button with text and icon (16x16)*/
+class FancyButton extends TextButton{
+  PImage img;
+  FancyButton(int x, int y, int type, String text, PImage icon){
+    super(x, y, type, text);
+    img = icon;
+  }
+  
+  /** Update x offset to allow for room for icon*/
+  void updateDim(PGraphics g){
+    super.updateDim(g);
+    off.x += SIZE;
+    dim.x += 1;
+  }
+  
+  void render(PGraphics g){
+    super.render(g);
+    g.image(img, pos.x + SIZE * 0.5f, pos.y + SIZE * 0.5f);
+  }
+}
+
+/** One high button with an icon*/
+class SmallFancyButton extends SmallTextButton{
+  PImage img;
+  SmallFancyButton(int x, int y, int type, String text, PImage icon){
+    super(x, y, type, text);
+    img = icon;
+    img.resize(8, 8);
+  }
+  
+  /** Update x offset to allow for room for icon*/
+  void updateDim(PGraphics g){
+    super.updateDim(g);
+    off.x += SIZE * 0.75;
+    dim.x += 1;
+  }
+  
+  void render(PGraphics g){
+    super.render(g);
+    g.image(img, pos.x + SIZE * 0.5f, pos.y + SIZE * 0.5f - 3);
   }
 }

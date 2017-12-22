@@ -88,8 +88,10 @@ class MainMenu extends GameState{
     TileButton mana = new TileButton(48, 16, BLUE, textures.get("gui.mana_heart_full"));
     SmallTextButton textA = new SmallTextButton(64,16, RED, "Small button");
     TextButton textB = new TextButton(16, 32, YELLOW, "TextButton");
-    addRender(health, stamina, mana, textB, textA);
-    addMouse(health, stamina, mana, textB, textA);
+    FancyButton fb = new FancyButton(16,64, BLUE, "Fancy", textures.get("gui.question_mark_orange"));
+    SmallFancyButton sfb = new SmallFancyButton(16, 96, RED, "Small & Fancy", textures.get("gui.question_mark_white"));
+    addRender(health, stamina, mana, textB, textA, fb, sfb);
+    addMouse(health, stamina, mana, textB, textA, fb, sfb);
   }
   
   void render(PGraphics g){

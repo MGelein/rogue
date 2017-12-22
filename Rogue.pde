@@ -66,6 +66,11 @@ interface IMouse{
   boolean isHighlighted();
   void mouseDown();
   void mouseUp();
+  void addMouseHandler(MouseHandler h);
+}
+class MouseHandler{
+  void mouseDown(int button){};
+  void mouseUp(int button){};
 }
 void mousePressed(){ currentState.mouseDown(floor(mouseX / SCL), floor(mouseY / SCL)); }
 void mouseReleased(){ currentState.mouseUp(floor(mouseX / SCL), floor(mouseY / SCL)); }
