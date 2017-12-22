@@ -3,7 +3,6 @@ int SIZE = 16;
 
 Registry registry = new Registry();
 GameState currentState;
-Game game;
 Textures textures;
 
 PGraphics stage;
@@ -22,14 +21,13 @@ void setup(){
   //Load all texture objects
   textures = new Textures();
   
-  //The global game object
-  game = new Game();
-  currentState = game;
-  
   //Load a font to use for all drawing of text (to set it we must be drawing)
   stage.beginDraw();
   stage.textFont(createFont("Dawnlike/GUI/SDS_8x8.ttf", 8));
   stage.endDraw();
+  
+  //Finally set the current game state to the main menu
+  currentState = new MainMenu();
 }
 
 void draw(){
@@ -44,20 +42,6 @@ void draw(){
   
   //Now that we've drawn to the buffer, render it to screen
   image(stage, 0, 0, width, height);
-}
-
-/**
-GameState classs
-**/
-class GameState{
-  /** Every game state has an update function*/
-  void update(){};
-  /** Every game state can render using the provided buffer*/
-  void render(PGraphics g){};
-  /** Every game state can receive mouse down events*/
-  void mouseDown(int x, int y){};
-  /** Every game state can receive mouse up events*/
-  void mouseUp(int x, int y){};
 }
 
 /**
