@@ -1,10 +1,12 @@
-class Button implements IMouse, IRender{
+class Button extends MouseAble{
   PImage[] normalTiles = new PImage[10];
   PImage[] highlightTiles = new PImage[10];
+  
   Int2D pos;
   Int2D dim = new Int2D(1, 1);
+  
   boolean smallTile = false;//used to make small text buttons
-  MouseHandler mouseHandler = null;//Used to handle mouse events for this button
+  boolean highlighted = false;
   
   Button(int x, int y, int type){
     pos = new Int2D(x, y);
@@ -13,6 +15,14 @@ class Button implements IMouse, IRender{
     else if(type == GREEN) fetchTiles("black_green", "green_red");
     else if(type == YELLOW) fetchTiles("black_yellow", "yellow_black");
     else fetchTiles("black_red", "red_green");
+    
+    
+    //Add the highlight listener
+    addMouseHandler(new MouseHandler(){
+      void mouseMove(int x, int y){
+        highlighted = x > pos.x && x < pos.x + getWidth() && y > pos.y && y < pos.y + getHeight();
+      }
+    });
   }
   
   void fetchTiles(String normal, String highlight){
@@ -75,36 +85,21 @@ class Button implements IMouse, IRender{
     }
   }
   
-  void addMouseHandler(MouseHandler h){
-    mouseHandler = h;
-  }
-  
-  boolean isHighlighted(){
-    float x = mouseX / SCL;
-    float y = mouseY / SCL;
-    return x > pos.x && x < pos.x + (dim.x * SIZE) && y > pos.y && y < pos.y + (dim.y * SIZE);
-  }
-  
   void renderTile(PGraphics g, int tileIndex, int x, int y){
     if(!smallTile){
       g.image(
-        (isHighlighted() ? highlightTiles[tileIndex] : normalTiles[tileIndex]),
+        (highlighted ? highlightTiles[tileIndex] : normalTiles[tileIndex]),
         pos.x + (x * SIZE),
         pos.y + (y * SIZE)
       );
     }else{
-      //PImage tile = (isHighlighted() ? highlightTiles[tileIndex] : normalTiles[tileIndex]);
-      //PImage halfTile = tile.get(0, (y == 0 ? 0 : 8), 16, 8);
       g.image(
-        (isHighlighted() ? highlightTiles[tileIndex] : normalTiles[tileIndex]).get(0, (y == 0 ? 0 : 8), 16, 8),
+        (highlighted ? highlightTiles[tileIndex] : normalTiles[tileIndex]).get(0, (y == 0 ? 0 : 8), 16, 8),
         pos.x + (x * SIZE),
         pos.y + (y * SIZE * 0.5f)
       );
     }
   }
-  
-  void mouseDown(){ if(mouseHandler != null) mouseHandler.mouseDown(mouseButton);};
-  void mouseUp(){ if(mouseHandler != null) mouseHandler.mouseUp(mouseButton);};
 }
 
 /**
@@ -134,7 +129,7 @@ class TextButton extends Button{
     //Check if we need to recalc width
     if(recalc) updateDim(g);
     
-    if(isHighlighted()){ //If highlighted, also draw a text shadow
+    if(highlighted){ //If highlighted, also draw a text shadow
       g.fill(0);
       g.text(text, pos.x + off.x + 1, pos.y + off.y + 1);
       g.fill(255);
@@ -254,5 +249,39 @@ class SmallFancyButton extends SmallTextButton{
   void render(PGraphics g){
     super.render(g);
     g.image(img, pos.x + SIZE * 0.5f, pos.y + SIZE * 0.5f - 3);
+  }
+}
+
+
+class TextField extends MouseAble implements IUpdate{
+  Int2D pos;
+  Int2D dim = new Int2D();
+  int verticalSpacing = 16;
+  MouseHandler mouseHandler = null;
+  String text = "This is the default length";
+  
+  /** Specify the position and length in characters to draw this textfield*/
+  TextField(int x, int y){
+    pos = new Int2D(x, y);
+    updateDim();
+  }
+  
+  void updateDim(){
+    dim.x = floor(stage.textWidth(text) + verticalSpacing);
+    dim.y = 14;
+  }
+  
+  /** Renders the textfield and its text */
+  void render(PGraphics g){
+    g.stroke(200);
+    g.fill(0);
+    g.rect(pos.x, pos.y, dim.x, dim.y);
+    g.fill(255);
+    g.text(text, pos.x + verticalSpacing / 2, pos.y + dim.y - 2);
+  }
+  
+  /** Called to update the textfield*/
+  void update(){
+    
   }
 }

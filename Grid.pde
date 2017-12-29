@@ -3,6 +3,7 @@ class Grid implements IRender{
   private GridCell[] cells;
   private int cols;
   private int rows;
+  boolean renderLines = false;
   
   Grid(int maxCols, int maxRows){
     rows = maxRows;
@@ -30,7 +31,16 @@ class Grid implements IRender{
   }
   
   void render(PGraphics g){
-    for(GridCell c : cells) c.render(g);
+    for(GridCell c : cells) {
+      c.render(g);
+    }
+    if(renderLines){
+      g.noFill();
+      g.stroke(255, 100);
+      for(GridCell c : cells){
+        c.renderGrid(g);
+      }
+    }
   }
  
   GridCell get(int x, int y){
@@ -63,6 +73,10 @@ class GridCell implements IRender{
   
   void render(PGraphics g){
     for(GridObject o : objects) o.render(g);
+  }
+  
+  void renderGrid(PGraphics g){
+    g.rect(x * SIZE, y * SIZE, x * SIZE + SIZE, y * SIZE + SIZE);
   }
 }
 

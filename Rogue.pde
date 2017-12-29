@@ -5,21 +5,39 @@ int BLUE = 1, MANA = 1;
 int GREEN = 2, STAMINA = 2;
 int YELLOW = 3, GOLD = 3;
 
+boolean DRAW_FPS = false;  
+float FRAME_RATE = 60;
+boolean FULLSCREEN = true;
+
+MouseDistributor mouseDistributor = new MouseDistributor();
 Registry registry = new Registry();
 GameState currentState;
 Textures textures;
 
 PGraphics stage;
 
-void setup(){
-  size(1280, 720);
-  //fullScreen();
+void settings(){
+  //First load the game ini file
+  registry.load("game.ini", "game");
+  FULLSCREEN = registry.getBoolean("game.fullscreen");
+  DRAW_FPS = registry.getBoolean("game.show_fps");  
+ 
+  if(FULLSCREEN){
+    fullScreen();
+  }else{
+    size(registry.getInteger("game.window_width"), registry.getInteger("game.window_height"));
+  }
+  //No smoothing to allow pixelated look
   noSmooth();
+}
+
+void setup(){
+  //Black background while waiting to load
   background(0);
   
   //Load the ini files for the textures (spritesheet indexing)
   registry.load("textures.ini", "tex");
-  
+ 
   //Create the canvas to draw on
   stage = createGraphics(floor(1280 / 2), floor(720 / 2));
   SCL = width / stage.width;
@@ -31,6 +49,8 @@ void setup(){
   stage.beginDraw();
   stage.textFont(createFont("Dawnlike/GUI/SDS_8x8.ttf", 8));
   stage.endDraw();
+  //Set size for frameRate font
+  textSize(16);
   
   //Finally set the current game state to the main menu
   currentState = new MainMenu();
@@ -46,8 +66,20 @@ void draw(){
   //Do the updating
   currentState.update();
   
+  //Update the mouse events
+  mouseDistributor.update();
+  
   //Now that we've drawn to the buffer, render it to screen
   image(stage, 0, 0, width, height);
+  
+  //Draw FPS during development
+  if(DRAW_FPS){
+    fill(0);
+    text(floor(FRAME_RATE) + " fps", 2, 16);
+    fill(255, 255, 0);
+    text(floor(FRAME_RATE) + " fps", 3, 17);
+    FRAME_RATE -= (FRAME_RATE - frameRate) * 0.1f;
+  }
 }
 
 /**
@@ -63,19 +95,38 @@ interface IUpdate{
 /**
 MOUSE Input handling
 **/
-
-interface IMouse{
-  boolean isHighlighted();
-  void mouseDown();
-  void mouseUp();
-  void addMouseHandler(MouseHandler h);
+class MouseDistributor{
+  private ArrayList<MouseAble> subscribers = new ArrayList<MouseAble>();
+  float oX = 0;
+  float oY = 0;
+  
+  void update(){
+    if(mouseX != oX || mouseY != oY){
+      for(MouseAble m : subscribers){
+        m.mouseMove(floor(mouseX / SCL), floor(mouseY / SCL));
+      }
+      oX = mouseX;
+      oY = mouseY;
+    }
+  }
+  
+  void mouseDown(){
+    for(MouseAble m : subscribers){
+      m.mouseDown(floor(mouseX / SCL), floor(mouseY / SCL));
+    }
+  }
+  
+  void mouseUp(){
+    for(MouseAble m : subscribers){
+      m.mouseUp(floor(mouseX / SCL), floor(mouseY / SCL));
+    }
+  }
+  
+  void add(MouseAble m){ subscribers.add(m);}
+  void remove(MouseAble m){ subscribers.remove(m);}
 }
-class MouseHandler{
-  void mouseDown(int button){};
-  void mouseUp(int button){};
-}
-void mousePressed(){ currentState.mouseDown(floor(mouseX / SCL), floor(mouseY / SCL)); }
-void mouseReleased(){ currentState.mouseUp(floor(mouseX / SCL), floor(mouseY / SCL)); }
+void mousePressed(){ mouseDistributor.mouseDown();}
+void mouseReleased(){ mouseDistributor.mouseUp();}
 
 /**
 KEY HANDLING

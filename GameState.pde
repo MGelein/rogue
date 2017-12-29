@@ -1,55 +1,40 @@
 /**
 GameState class
 **/
-class GameState implements IRender{
-  /** List of objects that will listen for mouse clicks*/
-  ArrayList<IMouse> mouseObjects = new ArrayList<IMouse>();
-  
+class GameState{  
   /** List of objects to render*/
-  ArrayList<IRender> renderObjects = new ArrayList<IRender>();
+  ArrayList<RenderAble> renderObjects = new ArrayList<RenderAble>();
   
   /** List of objects to update*/
   ArrayList<IUpdate> updateObjects = new ArrayList<IUpdate>();
   
   /** Every game state has an update function*/
   void update(){
+    //Now update all of them
     for(IUpdate u : updateObjects) u.update();
   };
   
   /** Every game state can render using the provided buffer*/
   void render(PGraphics g){
-    for(IRender r : renderObjects) r.render(g);
+    for(RenderAble r : renderObjects) r.render(g);
   };
-  
-  /** Every game state can receive mouse down events*/
-  void mouseDown(int x, int y){
-    for(IMouse i : mouseObjects){
-      if(i.isHighlighted()) i.mouseDown();
-    }
-  };
-  /** Every game state can receive mouse up events*/
-  void mouseUp(int x, int y){
-    for(IMouse i : mouseObjects){
-      if(i.isHighlighted()) i.mouseUp();
-    }
-  };
-  /** Add object to list of objects that are listened to by the mouse*/
-  void addMouse(IMouse... m){
-    for(IMouse mObj : m) mouseObjects.add(mObj);
-  }
-  /** Remove object from list of mouse objects*/
-  void removeMousee(IMouse... m){
-    for(IMouse mObj : m) mouseObjects.remove(mObj);
-  }
   
   /** Adds the object to the list of objects to render*/
-  void addRender(IRender... r){
-    for(IRender rObj : r) renderObjects.add(rObj);
+  void addRender(RenderAble... r){
+    for(RenderAble rObj : r) renderObjects.add(rObj);
+  }
+  
+  void addMouse(MouseAble... m){
+    for(MouseAble mObj : m) mouseDistributor.add(mObj);
+  }
+  
+  void removeMouse(MouseAble... m){
+    for(MouseAble mObj : m) mouseDistributor.add(mObj);
   }
   
   /** Removes the specified object from the list of objects to render*/
-  void removeRender(IRender... r){
-    for(IRender rObj : r) renderObjects.remove(rObj);
+  void removeRender(RenderAble... r){
+    for(RenderAble rObj : r) renderObjects.remove(rObj);
   }
   
   /** Adds a new item to the list of items to be updated*/
@@ -74,7 +59,8 @@ class Game extends GameState{
     //Create a new grid at the specified dimensions
     grid = new Grid(24, 18);
     grid.load(new Room("rooms/room.xml"));
-    addRender(grid);
+    grid.renderLines = true;
+    //addRender(grid);
   } 
 }
 /**
@@ -85,30 +71,32 @@ class MainMenu extends GameState{
   MainMenu(){
     //New game button
     BigTextButton newGameButton = new BigTextButton(0, 112, GREEN, "New Game");
+    newGameButton.addMouseHandler(new MouseHandler(){
+      void mouseDown(int x, int y){currentState = new Game();}
+    });
     newGameButton.centerX();
     
-    //Dugeon editor button
-    BigTextButton editorButton = new BigTextButton(0, 176, BLUE, "Dungeon Editor");
-    editorButton.centerX();
-    
     //Close button
-    BigTextButton closeButton = new BigTextButton(0, 240, RED, "Exit");
+    BigTextButton closeButton = new BigTextButton(0, 176, RED, "Exit");
     closeButton.addMouseHandler(new MouseHandler(){
-      void mouseDown(int button){ exit();}
+      void mouseDown(int x, int y){ exit();}
     });
     closeButton.centerX();
     
     int bottomY = stage.height - 40;
     final FancyButton musicButton = new FancyButton(8, bottomY, YELLOW, "Music: ON", textures.get("music.trumpet"));
     musicButton.addMouseHandler(new MouseHandler(){
-      void mouseDown(int button){
+      void mouseDown(int x, int y){
         musicButton.text = (musicButton.text == "Music: ON") ? "Music: OFF" : "Music: ON";
         musicButton.recalc = true;
       }
     });
     
-    addRender(newGameButton, editorButton, closeButton, musicButton);
-    addMouse(newGameButton, editorButton, closeButton, musicButton);
+    TextField tf = new TextField(16, 160);
+    
+    addRender(newGameButton, closeButton, musicButton, tf);
+    addMouse(newGameButton, closeButton, musicButton, tf);
+    addUpdate(tf);
   }
   
   void render(PGraphics g){
