@@ -6,7 +6,6 @@ class Button extends MouseAble{
   Int2D dim = new Int2D(1, 1);
   
   boolean smallTile = false;//used to make small text buttons
-  boolean highlighted = false;
   
   Button(int x, int y, int type){
     pos = new Int2D(x, y);
@@ -249,39 +248,5 @@ class SmallFancyButton extends SmallTextButton{
   void render(PGraphics g){
     super.render(g);
     g.image(img, pos.x + SIZE * 0.5f, pos.y + SIZE * 0.5f - 3);
-  }
-}
-
-
-class TextField extends MouseAble implements IUpdate{
-  Int2D pos;
-  Int2D dim = new Int2D();
-  int verticalSpacing = 16;
-  MouseHandler mouseHandler = null;
-  String text = "This is the default length";
-  
-  /** Specify the position and length in characters to draw this textfield*/
-  TextField(int x, int y){
-    pos = new Int2D(x, y);
-    updateDim();
-  }
-  
-  void updateDim(){
-    dim.x = floor(stage.textWidth(text) + verticalSpacing);
-    dim.y = 14;
-  }
-  
-  /** Renders the textfield and its text */
-  void render(PGraphics g){
-    g.stroke(200);
-    g.fill(0);
-    g.rect(pos.x, pos.y, dim.x, dim.y);
-    g.fill(255);
-    g.text(text, pos.x + verticalSpacing / 2, pos.y + dim.y - 2);
-  }
-  
-  /** Called to update the textfield*/
-  void update(){
-    
   }
 }

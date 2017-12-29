@@ -46,6 +46,15 @@ class GameState{
   void removeUpdate(IUpdate... u){
     for(IUpdate uObj : u) updateObjects.remove(uObj);
   }
+  
+  void change(GameState gs){
+    this.unload();
+    currentState = gs;
+  }
+  
+  void unload(){
+    mouseDistributor.reset();
+  }
 }
 
 /**
@@ -56,11 +65,7 @@ class Game extends GameState{
   Grid grid;
   
   Game(){
-    //Create a new grid at the specified dimensions
-    grid = new Grid(24, 18);
-    grid.load(new Room("rooms/room.xml"));
-    grid.renderLines = true;
-    //addRender(grid);
+    
   } 
 }
 /**
@@ -72,14 +77,18 @@ class MainMenu extends GameState{
     //New game button
     BigTextButton newGameButton = new BigTextButton(0, 112, GREEN, "New Game");
     newGameButton.addMouseHandler(new MouseHandler(){
-      void mouseDown(int x, int y){currentState = new Game();}
+      void mouseDown(int x, int y){
+        currentState.change(new Game());
+      }
     });
     newGameButton.centerX();
     
     //Close button
     BigTextButton closeButton = new BigTextButton(0, 176, RED, "Exit");
     closeButton.addMouseHandler(new MouseHandler(){
-      void mouseDown(int x, int y){ exit();}
+      void mouseDown(int x, int y){
+        exit();
+      }
     });
     closeButton.centerX();
     
@@ -92,11 +101,8 @@ class MainMenu extends GameState{
       }
     });
     
-    TextField tf = new TextField(16, 160);
-    
-    addRender(newGameButton, closeButton, musicButton, tf);
-    addMouse(newGameButton, closeButton, musicButton, tf);
-    addUpdate(tf);
+    addRender(newGameButton, closeButton, musicButton);
+    addMouse(newGameButton, closeButton, musicButton);
   }
   
   void render(PGraphics g){
@@ -106,8 +112,7 @@ class MainMenu extends GameState{
     g.tint(255);
     
     //Draw the title lettering
-    drawTitle(g);
-    
+    drawTitle(g);    
     
     //Finally paint the elements
     super.render(g);   

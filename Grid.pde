@@ -1,4 +1,4 @@
-class Grid implements IRender{
+class Grid extends RenderAble{
   
   private GridCell[] cells;
   private int cols;
@@ -15,14 +15,6 @@ class Grid implements IRender{
       for(int row = 0; row < maxRows; row++){
         cells[col + row * cols] = new GridCell(col, row);
       }
-    }
-  }
-  
-  /** Loads the cells from the specified room*/
-  void load(Room r){
-    for(GridCell c : cells) c.empty();
-    for(GridObject o : r.objects){
-      get(o.x, o.y).objects.add(o);
     }
   }
   
@@ -51,7 +43,7 @@ class Grid implements IRender{
   }
 }
 
-class GridCell implements IRender{
+class GridCell extends RenderAble{
   int x;
   int y;
   int size = SIZE;
@@ -81,7 +73,7 @@ class GridCell implements IRender{
 }
 
 /** Every single object on one tile is a gridObject*/
-class GridObject implements IRender{
+class GridObject extends RenderAble{
   int x;
   int y;
   PImage tex;

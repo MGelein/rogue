@@ -85,9 +85,6 @@ void draw(){
 /**
 RENDER & UPDATE interface
 **/
-interface IRender{
-  void render(PGraphics g);
-}
 interface IUpdate{
   void update();
 }
@@ -99,6 +96,7 @@ class MouseDistributor{
   private ArrayList<MouseAble> subscribers = new ArrayList<MouseAble>();
   float oX = 0;
   float oY = 0;
+  boolean reset = false;
   
   void update(){
     if(mouseX != oX || mouseY != oY){
@@ -108,6 +106,7 @@ class MouseDistributor{
       oX = mouseX;
       oY = mouseY;
     }
+    if(reset) subscribers.clear();
   }
   
   void mouseDown(){
@@ -120,6 +119,10 @@ class MouseDistributor{
     for(MouseAble m : subscribers){
       m.mouseUp(floor(mouseX / SCL), floor(mouseY / SCL));
     }
+  }
+  
+  void reset(){
+    reset = true;
   }
   
   void add(MouseAble m){ subscribers.add(m);}

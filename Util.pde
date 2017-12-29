@@ -1,7 +1,13 @@
+/**
+Random element from any fixed size array
+**/
 public <E> E random(E[] arr){
   return arr[floor(random(arr.length))];
 }
 
+/**
+Random element from any arraylist
+**/
 public <E> E random(ArrayList<E> list){
   return (list.get(floor(random(list.size()))));
 }
