@@ -65,8 +65,14 @@ class Game extends GameState{
   Grid grid;
   
   Game(){
-    
-  } 
+    grid = new Grid(51, 51);
+    grid.load(dungeonGenerator);
+    addRender(grid);
+  }
+  
+  void update(){
+    if(keys.isDownOnce(ENTER)) grid.load(dungeonGenerator);
+  }
 }
 /**
 The main menu class

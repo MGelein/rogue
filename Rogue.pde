@@ -38,7 +38,7 @@ void setup(){
   
   //Load the ini files for the textures (spritesheet indexing)
   registry.load("textures.ini", "tex");
- 
+  
   //Create the canvas to draw on
   stage = createGraphics(floor(1280 / 2), floor(720 / 2));
   SCL = width / stage.width;
@@ -54,11 +54,12 @@ void setup(){
   textSize(16);
   
   //Finally set the current game state to the main menu
-  currentState = new MainMenu();
+  currentState = new Game();
 }
 
 void draw(){
   //Do the rendering
+  background(0);
   stage.beginDraw();
   stage.background(0);
   currentState.render(stage);

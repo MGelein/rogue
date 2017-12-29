@@ -18,6 +18,16 @@ class Grid extends RenderAble{
     }
   }
   
+  void load(DungeonGenerator generator){
+    int[] dungeon = generator.generate(cols, rows);
+    for(int i = 0; i < dungeon.length; i++){
+      int x = i % cols;
+      int y = floor(i / cols);
+      get(i).empty();
+      get(i).objects.add(new GridObject(x, y).parse(dungeon[i]));
+    }
+  }
+  
   void update(){
     for(GridCell c : cells) c.update();
   }
@@ -77,12 +87,10 @@ class GridObject extends RenderAble{
   int x;
   int y;
   PImage tex;
-  XML data;
   
-  GridObject(int x, int y, XML data){
+  GridObject(int x, int y){
     this.x = x;
     this.y = y;
-    this.data = data;
   }
   
   void setTexture(String s){
@@ -92,7 +100,26 @@ class GridObject extends RenderAble{
   void update(){};
   
   void render(PGraphics g){
+    if(tex == null) return;
     g.image(tex, x * SIZE, y * SIZE);
+  }
+  
+  GridObject parse(int dungeonTile){
+    if(dungeonTile == dungeonGenerator.FLOOR) setTexture("floor.brick_mm");
+    if(dungeonTile == dungeonGenerator.WALL_FLAT) setTexture("wall.brick_flat");
+    if(dungeonTile == dungeonGenerator.WALL_T_TOP) setTexture("wall.brick_tjunction_top");
+    if(dungeonTile == dungeonGenerator.WALL_T_BOTTOM) setTexture("wall.brick_tjunction_bottom");
+    if(dungeonTile == dungeonGenerator.WALL_T_LEFT) setTexture("wall.brick_tjunction_left");
+    if(dungeonTile == dungeonGenerator.WALL_T_RIGHT) setTexture("wall.brick_tjunction_right");
+    if(dungeonTile == dungeonGenerator.WALL_X) setTexture("wall.brick_xjunction");
+    if(dungeonTile == dungeonGenerator.WALL_STRAIGHT_V) setTexture("wall.brick_straight_v");
+    if(dungeonTile == dungeonGenerator.WALL_STRAIGHT_H) setTexture("wall.brick_straight_h");
+    if(dungeonTile == dungeonGenerator.WALL_CORNER_TL) setTexture("wall.brick_corner_tl");
+    if(dungeonTile == dungeonGenerator.WALL_CORNER_BL) setTexture("wall.brick_corner_bl");
+    if(dungeonTile == dungeonGenerator.WALL_CORNER_TR) setTexture("wall.brick_corner_tr");
+    if(dungeonTile == dungeonGenerator.WALL_CORNER_BR) setTexture("wall.brick_corner_br");
+    if(dungeonTile == dungeonGenerator.WALL_END) setTexture("wall.brick_end");
+    return this;
   }
 }
 

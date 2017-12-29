@@ -5,14 +5,30 @@ class DungeonGenerator{
   int ROOM = 2;
   int VOID = 3;
   
+  //Wall types
+  int WALL_FLAT = 4;
+  int WALL_T_TOP = 5;
+  int WALL_T_BOTTOM = 6;
+  int WALL_T_LEFT = 7;
+  int WALL_T_RIGHT = 8;
+  int WALL_X = 9;
+  int WALL_STRAIGHT_V = 10;
+  int WALL_STRAIGHT_H = 11;
+  int WALL_CORNER_TL = 12;
+  int WALL_CORNER_BL = 13;
+  int WALL_CORNER_TR = 14;
+  int WALL_CORNER_BR = 15;
+  int WALL_END = 16;
+  
+  
   //Amt of tries to place a room in the grid
-  int roomDensity = 500;
+  int roomDensity = 60;
   //One in $deadRoomChance chance to not have any other exits to one room
   int deadRoomChance = 2;
   //One in $wallHoleChance chance to have a hole in a divider wall
-  int wallHoleChance = 50;
+  int wallHoleChance = 100;
   //Maximum size of a generated room
-  int max_size = 13;
+  int max_size = 11;
   //Minimum size of a generated room
   int min_size = 5;
   
@@ -41,7 +57,7 @@ class DungeonGenerator{
   void setCell(Int2D pos, int value){ setCell(pos.x, pos.y, value);}
   
   /** Generates a new dungeon with the specified size*/
-  void generate(int c, int r){
+  int[] generate(int c, int r){
     //STEP 0: Set everythings as solid walls and create the lists
     cols = c;
     rows = r;
@@ -51,7 +67,7 @@ class DungeonGenerator{
     
     //STEP 1: Try to place rooms, roomDensity times
     for(int i = 0; i < roomDensity; i++) placeRoom();
-    
+   
     //STEP 2: Pick a random wall at an uneven starting point, push to open list
     ArrayList<Int2D> open = new ArrayList<Int2D>();
     Int2D pos = new Int2D();
@@ -124,10 +140,60 @@ class DungeonGenerator{
       pos.y = floor(i / cols);
       //Only check wall cells
       if(getCell(pos) == WALL){
-        if(isAllWall(pos)) voids.add(i);
+        int left = getCell(pos.x - 1, pos.y);
+        int tl = getCell(pos.x - 1, pos.y - 1);
+        int right = getCell(pos.x + 1, pos.y);
+        int tr = getCell(pos.x + 1, pos.y - 1);
+        int up = getCell(pos.x, pos.y - 1);
+        int bl = getCell(pos.x - 1, pos.y + 1);
+        int down = getCell(pos.x, pos.y + 1);
+        int br = getCell(pos.x + 1, pos.y + 1);
+        if(tl + left + tr + up + down + bl + br + right == 0){
+          voids.add(i);
+        }
       }
     }
     for(int index: voids) grid[index] = VOID;
+    
+    //STEP 8: Wall conversion
+    for(int i = 0; i < grid.length; i++){
+      if(grid[i] == WALL){
+        grid[i] = convertWall(new Int2D(i % cols, floor(i / cols)));
+      }
+    }
+    
+    //STEP FINAL: Return the grid
+    return grid;
+  }
+  
+  /**
+  Converts the wall at the specified position into the right type of wall
+  **/
+  int convertWall(Int2D pos){
+    boolean left = isWall(getCell(pos.x - 1, pos.y));
+    boolean top = isWall(getCell(pos.x, pos.y - 1));
+    boolean bottom = isWall(getCell(pos.x, pos.y + 1));
+    boolean right = isWall(getCell(pos.x + 1, pos.y));
+    if(left && top && bottom && right) return WALL_X;
+    else if(left && bottom && right) return WALL_T_TOP;
+    else if(left && top && right) return WALL_T_BOTTOM;
+    else if(top && bottom && right) return WALL_T_LEFT;
+    else if(top && bottom && left) return WALL_T_RIGHT;
+    else if(top && bottom) return WALL_STRAIGHT_V;
+    else if(left && right) return WALL_STRAIGHT_H;
+    else if(bottom && right) return WALL_CORNER_TL;
+    else if(bottom && left) return WALL_CORNER_TR;
+    else if(top && right) return WALL_CORNER_BL;
+    else if(top && left) return WALL_CORNER_BR;
+    else if(bottom) return WALL_STRAIGHT_V;
+    else if(left || right) return WALL_STRAIGHT_H;
+    else return WALL_END;
+  }
+  
+  boolean isWall(int n){
+    return n == WALL || n == WALL_FLAT || n == WALL_T_TOP || n == WALL_T_BOTTOM || n == WALL_T_LEFT
+    || n == WALL_T_RIGHT || n == WALL_X || n == WALL_STRAIGHT_V || n == WALL_STRAIGHT_H
+    || n == WALL_CORNER_TL || n == WALL_CORNER_BL || n == WALL_CORNER_TR || n == WALL_CORNER_BR || n == WALL_END;
   }
   
   /**Checks if the provided piece of path is a dead end*/
@@ -200,7 +266,7 @@ class DungeonGenerator{
     DungeonRoom r = new DungeonRoom();
     for(int x = pos.x; x < pos.x + dim.x; x++){
       for(int y = pos.y; y < pos.y + dim.y; y++){
-        if(getCell(x, y) == WALL) return;
+        if(getCell(x, y) == ROOM) return;
         //Add this tile to the room
         r.tiles.add(new Int2D(x, y));
       }
@@ -208,6 +274,7 @@ class DungeonGenerator{
     
     //If we made it to here, we can add this room to the list accepted of rooms
     rooms.add(r);
+    for(Int2D tile : r.tiles) setCell(tile, ROOM);
   }
   
   
@@ -239,6 +306,7 @@ class DungeonGenerator{
       }      
       //Pick a random direction
       Int2D dir = new Int2D().rndDir();
+      pos = pos.copy();
       
       //Punch through untill we reach FLOOR
       do{
