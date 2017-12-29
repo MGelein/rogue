@@ -120,4 +120,48 @@ class Int2D{
       y = -1;
     }
   }
+  
+   Int2D rndOdd(int minX, int maxX, int minY, int maxY){
+    x = floor(random(minX, maxX - 1));
+    y = floor(random(minY, maxY - 1));
+    //make sure that the coords are odd
+    x = (x % 2 == 0) ? x + 1: x;
+    y = (y % 2 == 0) ? y + 1: y;
+    return this;
+  
+  }
+  
+  Int2D rndOdd(int maxX, int maxY){
+    return rndOdd(0, maxX, 0, maxY);
+  }
+  
+  Int2D copy(){
+    return new Int2D(x, y);
+  }
+  
+  Int2D add(Int2D b){
+    x += b.x;
+    y += b.y;
+    return this;
+  }
+  
+  Int2D half(){
+    x *= 0.5f;
+    y *= 0.5f;
+    return this;
+  }
+  
+  /**Returns a one length 2D 90 degree vector*/
+  Int2D rndDir(){
+    int rnd = floor(random(4));
+    if(rnd == 0) x = -1;
+    else if(rnd == 1) x = 1;
+    else if(rnd == 2) y = -1;
+    else if(rnd == 3) y = 1;
+    return this;
+  }
+  
+  boolean isOdd(){
+    return (x % 2 != 0) && (y % 2 != 0);
+  }
 }

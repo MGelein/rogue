@@ -13,6 +13,7 @@ MouseDistributor mouseDistributor = new MouseDistributor();
 Registry registry = new Registry();
 GameState currentState;
 Textures textures;
+DungeonGenerator dungeonGenerator = new DungeonGenerator();
 
 PGraphics stage;
 
