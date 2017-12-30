@@ -72,6 +72,10 @@ class Game extends GameState{
   
   void update(){
     if(keys.isDownOnce(ENTER)) grid.load(dungeonGenerator);
+    if(keys.isDownOnce(UP)) grid.viewPoint.y ++;
+    if(keys.isDownOnce(DOWN)) grid.viewPoint.y --;
+    if(keys.isDownOnce(LEFT)) grid.viewPoint.x ++;
+    if(keys.isDownOnce(RIGHT)) grid.viewPoint.x --;
   }
 }
 /**

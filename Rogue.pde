@@ -40,7 +40,7 @@ void setup(){
   registry.load("textures.ini", "tex");
   
   //Create the canvas to draw on
-  stage = createGraphics(floor(1280 / 2), floor(720 / 2));
+  stage = createGraphics(floor(1280 / SCL), floor(720 / SCL));
   SCL = width / stage.width;
   
   //Load all texture objects

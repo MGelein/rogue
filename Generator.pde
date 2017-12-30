@@ -18,7 +18,29 @@ class DungeonGenerator{
   int WALL_CORNER_BL = 13;
   int WALL_CORNER_TR = 14;
   int WALL_CORNER_BR = 15;
-  int WALL_END = 16;
+  int WALL_END_BOTTOM = 16;
+  int WALL_END_TOP = 17;
+  int WALL_END_LEFT = 18;
+  int WALL_END_RIGHT = 19;
+  int WALL_END = 20;
+  
+  //Floor types
+  int FLOOR_TL = 121;
+  int FLOOR_TM = 122;
+  int FLOOR_TR = 123;
+  int FLOOR_ML = 124;
+  int FLOOR_MM = 125;
+  int FLOOR_MR = 126;
+  int FLOOR_BL = 127;
+  int FLOOR_BM = 128;
+  int FLOOR_BR = 129;
+  int FLOOR_END_TOP = 130;
+  int FLOOR_END_BOTTOM = 131;
+  int FLOOR_END_LEFT = 132;
+  int FLOOR_END_RIGHT = 133;
+  int FLOOR_STRAIGHT_H = 134;
+  int FLOOR_STRAIGHT_V = 135;
+  int FLOOR_SINGLE = 136;
   
   
   //Amt of tries to place a room in the grid
@@ -40,6 +62,9 @@ class DungeonGenerator{
   int rows;
   //List of all rooms in this dungeon
   ArrayList<DungeonRoom> rooms = new ArrayList<DungeonRoom>();
+  
+  //Integer grid, every integer is one of the objcts
+  int[] objectGrid;
   
   /** Returns a cell from the grid, prevents out of bounds exceptions*/
   int getCell(int x, int y){
@@ -148,17 +173,19 @@ class DungeonGenerator{
         int bl = getCell(pos.x - 1, pos.y + 1);
         int down = getCell(pos.x, pos.y + 1);
         int br = getCell(pos.x + 1, pos.y + 1);
-        if(tl + left + tr + up + down + bl + br + right == 0){
+        if(tl + left + tr + up + down + bl + br + right <= 0){
           voids.add(i);
         }
       }
     }
     for(int index: voids) grid[index] = VOID;
     
-    //STEP 8: Wall conversion
+    //STEP 8: Wall & floor conversion
     for(int i = 0; i < grid.length; i++){
       if(grid[i] == WALL){
         grid[i] = convertWall(new Int2D(i % cols, floor(i / cols)));
+      }else if(grid[i] == FLOOR){
+        grid[i] = convertFloor(new Int2D(i % cols, floor(i / cols)));
       }
     }
     
@@ -166,14 +193,27 @@ class DungeonGenerator{
     return grid;
   }
   
+  int[] generateObjectLayer(){
+    //STEP 0: Setup for creation
+    objectGrid = new int[cols * rows];
+    for(int i = 0; i < objectGrid.length; i++) objectGrid[i] = VOID;
+    
+    //STEP FINAL: return the grid
+    return objectGrid;
+  }
+  
   /**
   Converts the wall at the specified position into the right type of wall
   **/
   int convertWall(Int2D pos){
     boolean left = isWall(getCell(pos.x - 1, pos.y));
+    if(pos.x == 0) left = false;
     boolean top = isWall(getCell(pos.x, pos.y - 1));
+    if(pos.y == 0) top = false;
     boolean bottom = isWall(getCell(pos.x, pos.y + 1));
+    if(pos.y == rows - 1) bottom = false;
     boolean right = isWall(getCell(pos.x + 1, pos.y));
+    if(pos.x == cols - 1) right = false;
     if(left && top && bottom && right) return WALL_X;
     else if(left && bottom && right) return WALL_T_TOP;
     else if(left && top && right) return WALL_T_BOTTOM;
@@ -185,15 +225,54 @@ class DungeonGenerator{
     else if(bottom && left) return WALL_CORNER_TR;
     else if(top && right) return WALL_CORNER_BL;
     else if(top && left) return WALL_CORNER_BR;
-    else if(bottom) return WALL_STRAIGHT_V;
-    else if(left || right) return WALL_STRAIGHT_H;
+    else if(top) return WALL_END_BOTTOM;
+    else if(right) return WALL_END_LEFT;
+    else if(left) return WALL_END_RIGHT;
+    else if(bottom) return WALL_END_TOP;
     else return WALL_END;
+  }
+  
+  /** Converts floor into proper tiled floors */
+  int convertFloor(Int2D pos){
+    boolean left = isFloor(getCell(pos.x - 1, pos.y));
+    boolean top = isFloor(getCell(pos.x, pos.y - 1));
+    boolean bottom = isFloor(getCell(pos.x, pos.y + 1));
+    boolean right = isFloor(getCell(pos.x + 1, pos.y));
+    if(left && top && bottom && right) return FLOOR_MM;
+    else if(left && bottom && right) return FLOOR_TM;
+    else if(left && top && right) return FLOOR_BM;
+    else if(top && bottom && right) return FLOOR_ML;
+    else if(top && bottom && left) return FLOOR_MR;
+    else if(top && bottom) return FLOOR_STRAIGHT_V;
+    else if(left && right) return FLOOR_STRAIGHT_H;
+    else if(bottom && right) return FLOOR_TL;
+    else if(bottom && left) return FLOOR_TR;
+    else if(top && right) return FLOOR_BL;
+    else if(top && left) return FLOOR_BR;
+    else if(top) return FLOOR_END_BOTTOM;
+    else if(right) return FLOOR_END_LEFT;
+    else if(left) return FLOOR_END_RIGHT;
+    else if(bottom) return FLOOR_END_TOP;
+    else return FLOOR_SINGLE;
+  }
+  
+  boolean isWalkAble(int n){
+    return isFloor(n) || n == VOID;
   }
   
   boolean isWall(int n){
     return n == WALL || n == WALL_FLAT || n == WALL_T_TOP || n == WALL_T_BOTTOM || n == WALL_T_LEFT
     || n == WALL_T_RIGHT || n == WALL_X || n == WALL_STRAIGHT_V || n == WALL_STRAIGHT_H
-    || n == WALL_CORNER_TL || n == WALL_CORNER_BL || n == WALL_CORNER_TR || n == WALL_CORNER_BR || n == WALL_END;
+    || n == WALL_CORNER_TL || n == WALL_CORNER_BL || n == WALL_CORNER_TR || n == WALL_CORNER_BR
+    || n == WALL_END_BOTTOM || n == WALL_END_TOP || n == WALL_END_LEFT || n == WALL_END_RIGHT;
+  }
+  
+  boolean isFloor(int n){
+    return n == FLOOR || n == FLOOR_TL || n == FLOOR_TM || n == FLOOR_TR
+    || n == FLOOR_ML || n == FLOOR_MM || n == FLOOR_MR || n == FLOOR_BL || n == FLOOR_BM
+    || n == FLOOR_BR || n == FLOOR_END_TOP || n == FLOOR_END_BOTTOM || n == FLOOR_END_LEFT
+    || n == FLOOR_END_RIGHT || n == FLOOR_STRAIGHT_V || n == FLOOR_STRAIGHT_H
+    || n == FLOOR_SINGLE;
   }
   
   /**Checks if the provided piece of path is a dead end*/

@@ -3,6 +3,7 @@ class Grid extends RenderAble{
   private GridCell[] cells;
   private int cols;
   private int rows;
+  Int2D viewPoint = new Int2D();
   boolean renderLines = false;
   
   Grid(int maxCols, int maxRows){
@@ -24,7 +25,7 @@ class Grid extends RenderAble{
       int x = i % cols;
       int y = floor(i / cols);
       get(i).empty();
-      get(i).objects.add(new GridObject(x, y).parse(dungeon[i]));
+      get(i).add(new GridObject(x, y).parse(dungeon[i]));
     }
   }
   
@@ -33,6 +34,10 @@ class Grid extends RenderAble{
   }
   
   void render(PGraphics g){
+    //Translate matrix for map viewing.
+    g.pushMatrix();
+    g.translate(viewPoint.x * SIZE, viewPoint.y * SIZE);
+        
     for(GridCell c : cells) {
       c.render(g);
     }
@@ -43,6 +48,7 @@ class Grid extends RenderAble{
         c.renderGrid(g);
       }
     }
+    g.popMatrix();
   }
  
   GridCell get(int x, int y){
@@ -56,6 +62,7 @@ class Grid extends RenderAble{
 class GridCell extends RenderAble{
   int x;
   int y;
+  boolean walkable = true;
   int size = SIZE;
   ArrayList<GridObject> objects = new ArrayList<GridObject>();
   
@@ -80,6 +87,15 @@ class GridCell extends RenderAble{
   void renderGrid(PGraphics g){
     g.rect(x * SIZE, y * SIZE, x * SIZE + SIZE, y * SIZE + SIZE);
   }
+  
+  void add(GridObject o){
+    o.parentCell = this;
+    objects.add(o);
+  }
+  
+  void remove(GridObject o){
+    objects.remove(o);
+  }
 }
 
 /** Every single object on one tile is a gridObject*/
@@ -87,6 +103,7 @@ class GridObject extends RenderAble{
   int x;
   int y;
   PImage tex;
+  GridCell parentCell;
   
   GridObject(int x, int y){
     this.x = x;
@@ -105,20 +122,51 @@ class GridObject extends RenderAble{
   }
   
   GridObject parse(int dungeonTile){
+    //According to tileType set walkability to false if not already false
+    if(! dungeonGenerator.isWalkAble(dungeonTile)) parentCell.walkable = false;   
+    
+    //Set theme
+    textures.setThemeModifier(textures.theme.none);
+    //WALLS
     if(dungeonTile == dungeonGenerator.FLOOR) setTexture("floor.brick_mm");
-    if(dungeonTile == dungeonGenerator.WALL_FLAT) setTexture("wall.brick_flat");
-    if(dungeonTile == dungeonGenerator.WALL_T_TOP) setTexture("wall.brick_tjunction_top");
-    if(dungeonTile == dungeonGenerator.WALL_T_BOTTOM) setTexture("wall.brick_tjunction_bottom");
-    if(dungeonTile == dungeonGenerator.WALL_T_LEFT) setTexture("wall.brick_tjunction_left");
-    if(dungeonTile == dungeonGenerator.WALL_T_RIGHT) setTexture("wall.brick_tjunction_right");
-    if(dungeonTile == dungeonGenerator.WALL_X) setTexture("wall.brick_xjunction");
-    if(dungeonTile == dungeonGenerator.WALL_STRAIGHT_V) setTexture("wall.brick_straight_v");
-    if(dungeonTile == dungeonGenerator.WALL_STRAIGHT_H) setTexture("wall.brick_straight_h");
-    if(dungeonTile == dungeonGenerator.WALL_CORNER_TL) setTexture("wall.brick_corner_tl");
-    if(dungeonTile == dungeonGenerator.WALL_CORNER_BL) setTexture("wall.brick_corner_bl");
-    if(dungeonTile == dungeonGenerator.WALL_CORNER_TR) setTexture("wall.brick_corner_tr");
-    if(dungeonTile == dungeonGenerator.WALL_CORNER_BR) setTexture("wall.brick_corner_br");
-    if(dungeonTile == dungeonGenerator.WALL_END) setTexture("wall.brick_end");
+    else if(dungeonTile == dungeonGenerator.WALL_FLAT) setTexture("wall.brick_flat");
+    else if(dungeonTile == dungeonGenerator.WALL_T_TOP) setTexture("wall.brick_tjunction_top");
+    else if(dungeonTile == dungeonGenerator.WALL_T_BOTTOM) setTexture("wall.brick_tjunction_bottom");
+    else if(dungeonTile == dungeonGenerator.WALL_T_LEFT) setTexture("wall.brick_tjunction_left");
+    else if(dungeonTile == dungeonGenerator.WALL_T_RIGHT) setTexture("wall.brick_tjunction_right");
+    else if(dungeonTile == dungeonGenerator.WALL_X) setTexture("wall.brick_xjunction");
+    else if(dungeonTile == dungeonGenerator.WALL_STRAIGHT_V) setTexture("wall.brick_straight_v");
+    else if(dungeonTile == dungeonGenerator.WALL_STRAIGHT_H) setTexture("wall.brick_straight_h");
+    else if(dungeonTile == dungeonGenerator.WALL_CORNER_TL) setTexture("wall.brick_corner_tl");
+    else if(dungeonTile == dungeonGenerator.WALL_CORNER_BL) setTexture("wall.brick_corner_bl");
+    else if(dungeonTile == dungeonGenerator.WALL_CORNER_TR) setTexture("wall.brick_corner_tr");
+    else if(dungeonTile == dungeonGenerator.WALL_CORNER_BR) setTexture("wall.brick_corner_br");
+    else if(dungeonTile == dungeonGenerator.WALL_END_TOP) setTexture("wall.brick_end_top");
+    else if(dungeonTile == dungeonGenerator.WALL_END_BOTTOM) setTexture("wall.brick_end_down");
+    else if(dungeonTile == dungeonGenerator.WALL_END_LEFT) setTexture("wall.brick_end_left");
+    else if(dungeonTile == dungeonGenerator.WALL_END_RIGHT) setTexture("wall.brick_end_right");
+    else if(dungeonTile == dungeonGenerator.WALL_END) setTexture("wall.brick_end");
+    
+    //FLOORS
+    else if(dungeonTile == dungeonGenerator.FLOOR_TL) setTexture("floor.brick_tl");
+    else if(dungeonTile == dungeonGenerator.FLOOR_TM) setTexture("floor.brick_tm");
+    else if(dungeonTile == dungeonGenerator.FLOOR_TR) setTexture("floor.brick_tr");
+    else if(dungeonTile == dungeonGenerator.FLOOR_ML) setTexture("floor.brick_ml");
+    else if(dungeonTile == dungeonGenerator.FLOOR_MM) setTexture("floor.brick_mm");
+    else if(dungeonTile == dungeonGenerator.FLOOR_MR) setTexture("floor.brick_mr");
+    else if(dungeonTile == dungeonGenerator.FLOOR_BL) setTexture("floor.brick_bl");
+    else if(dungeonTile == dungeonGenerator.FLOOR_BM) setTexture("floor.brick_bm");
+    else if(dungeonTile == dungeonGenerator.FLOOR_BR) setTexture("floor.brick_br");
+    else if(dungeonTile == dungeonGenerator.FLOOR_END_TOP) setTexture("floor.brick_end_top");
+    else if(dungeonTile == dungeonGenerator.FLOOR_END_BOTTOM) setTexture("floor.brick_end_bottom");
+    else if(dungeonTile == dungeonGenerator.FLOOR_END_LEFT) setTexture("floor.brick_end_left");
+    else if(dungeonTile == dungeonGenerator.FLOOR_END_RIGHT) setTexture("floor.brick_end_right");
+    else if(dungeonTile == dungeonGenerator.FLOOR_STRAIGHT_V) setTexture("floor.brick_straight_v");
+    else if(dungeonTile == dungeonGenerator.FLOOR_STRAIGHT_H) setTexture("floor.brick_straight_h");
+    else if(dungeonTile == dungeonGenerator.FLOOR_SINGLE) setTexture("floor.brick_single");
+    
+    //Reset theme
+    textures.setThemeModifier(textures.theme.none);
     return this;
   }
 }

@@ -2,6 +2,9 @@ class Textures{
   HashMap<String, SpriteSheet> spriteSheets = new HashMap<String, SpriteSheet>();
   HashMap<String, AnimatedSheet> animSheets = new HashMap<String, AnimatedSheet>();
   PImage mainMenuBG;
+  //Holds the theme modifiers
+  Theme theme = new Theme();
+  private Int2D currentTheme = theme.none;
   
   Textures(){
     //Load the bgImage
@@ -70,11 +73,21 @@ class Textures{
     animSheets.put("undead", new AnimatedSheet(SIZE  , "Characters/Undead0.png", "Characters/Undead1.png"));
   }
   
-  /** Tries to parse the provided string as a texture identifier*/
+  /** Sets the texture coord modifier. Set to THEME_DEFAULT to reset*/
+  void setThemeModifier(Int2D mod){
+    currentTheme = mod.copy();
+  }
+  
+  /** Looks for the provided string without a modifier*/
   PImage get(String s){
-    if(isAnimated(s)) return get(s, 0);
+    return get(s, currentTheme);
+  }
+  
+  /** Tries to parse the provided string as a texture identifier*/
+  PImage get(String s, Int2D themeModifier){
+    if(isAnimated(s)) return get(s, 0, themeModifier);
     return spriteSheets.get(s.substring(0, s.indexOf(".")).trim().toLowerCase()) //get sheet name
-                        .get(registry.getInt2D("tex." + s));                     //get sheet coords
+                        .get(registry.getInt2D("tex." + s).copy().add(themeModifier));                     //get sheet coords
   }
   
   /** If the texture described by the provided id is in the animated list or not */
@@ -86,10 +99,15 @@ class Textures{
     return animSheets.containsKey(s.substring(0, s.indexOf(".")).trim().toLowerCase());
   }
   
-  /** Looks for animated spritesheets to find a match*/
+  /** Looks for animated spriteSheet with default theme (0,0)*/
   PImage get(String s, int frame){
+    return get(s, frame, currentTheme);
+  }
+  
+  /** Looks for animated spritesheets to find a match*/
+  PImage get(String s, int frame, Int2D themeModifier){
     return animSheets.get(s.substring(0, s.indexOf(".")).trim().toLowerCase()) //get sheet name
-                        .get(registry.getInt2D("tex." + s), frame);            //get sheet coords
+                        .get(registry.getInt2D("tex." + s).copy().add(themeModifier), frame);            //get sheet coords
   }
 }
 
@@ -160,4 +178,44 @@ class SpriteSheet{
   PImage get(Int2D pos){
     return get(pos.x, pos.y);
   }
+}
+
+class Theme{
+  final Int2D none = new Int2D();
+  
+  //brick
+  final Int2D brick_light = new Int2D();
+  final Int2D brick = new Int2D(0, 3);
+  final Int2D brick_dark = new Int2D(0, 6);
+  final Int2D brick_darker = new Int2D(0, 9);
+  
+  //sandstone
+  final Int2D sandstone_light = new Int2D(0, 12);
+  final Int2D sandstone = new Int2D(0, 15);
+  final Int2D sandstone_dark = new Int2D(0, 18);
+  final Int2D sandstone_darker = new Int2D(0, 21);
+  
+  //wood
+  final Int2D wood_light = new Int2D(7, 0);
+  final Int2D wood = new Int2D(7, 3);
+  final Int2D wood_dark = new Int2D(7, 6);
+  final Int2D wood_darker = new Int2D(7, 9);
+  
+  //rock
+  final Int2D rock_light = new Int2D(7, 12);
+  final Int2D rock = new Int2D(7, 15);
+  final Int2D rock_dark = new Int2D(7, 18);
+  final Int2D rock_darker = new Int2D(7, 21);
+  
+  //temple
+  final Int2D temple_light = new Int2D(14, 0);
+  final Int2D temple = new Int2D(14, 3);
+  final Int2D temple_dark = new Int2D(14, 6);
+  final Int2D temple_darker = new Int2D(14, 9);
+  
+  //dirt
+  final Int2D dirt_light = new Int2D(14, 12);
+  final Int2D dirt = new Int2D(14, 15);
+  final Int2D dirt_dark = new Int2D(14, 18);
+  final Int2D dirt_darker = new Int2D(14, 21);
 }
