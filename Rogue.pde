@@ -1,5 +1,5 @@
 int SCL = 2;
-int GRID_SCL = 1;
+int GRID_SCL = 2;
 int SIZE = 16;
 int COLS_VISIBLE;
 int ROWS_VISIBLE;
@@ -42,12 +42,15 @@ void setup(){
   COLS_VISIBLE = width / (SCL * GRID_SCL * SIZE);
   ROWS_VISIBLE = height / (SCL * GRID_SCL * SIZE);
   
+  
   //Load the ini files for the textures (spritesheet indexing)
   registry.load("textures.ini", "tex");
   
   //Create the canvas to draw on
   stage = createGraphics(floor(1280 / SCL), floor(720 / SCL));
   SCL = width / stage.width;
+  colorMode(HSB);
+  
   
   //Load all texture objects
   textures = new Textures();

@@ -1,10 +1,12 @@
 class Grid extends RenderAble implements IUpdate{
   
+  private ArrayList<Light> lights = new ArrayList<Light>();
   private GridCell[] cells;
   private int cols;
   private int rows;
   private int animCounter = 0;
   private int animRate = 60;
+  private int ambientLight = color(10, 200, 220);
   Int2D viewPoint = new Int2D();
   boolean renderLines = false;
   
@@ -17,6 +19,7 @@ class Grid extends RenderAble implements IUpdate{
     for(int col = 0; col < maxCols; col++){
       for(int row = 0; row < maxRows; row++){
         cells[col + row * cols] = new GridCell(col, row);
+        cells[col + row * cols].grid = this;
       }
     }
   }
@@ -27,7 +30,7 @@ class Grid extends RenderAble implements IUpdate{
       int x = i % cols;
       int y = floor(i / cols);
       get(i).empty();
-      get(i).add(new GridObject(x, y).parse(dungeon[i]));
+      get(i).add(new GridObject(x, y, get(i)).parse(dungeon[i]));
     }
     
     //Now generate decoration for this dungeon
@@ -35,8 +38,25 @@ class Grid extends RenderAble implements IUpdate{
     for(int i = 0; i < decoration.length; i++){
       int x = i % cols;
       int y = floor(i / cols);
-      get(i).add(new GridObject(x, y).parse(decoration[i]));
+      get(i).add(new GridObject(x, y, get(i)).parse(decoration[i]));
     }
+    
+    calcLighting();
+  }
+  
+  void calcLighting(){
+    for(GridCell c : cells) c.lighting = ambientLight;
+    
+    for(Light l : lights) l.calculate();
+  }
+  
+  void addLight(Light l){
+    lights.add(l);
+    l.grid = this;
+  }
+  
+  void removeLight(Light l){
+    lights.remove(l);
   }
   
   void update(){
@@ -79,6 +99,8 @@ class Grid extends RenderAble implements IUpdate{
 class GridCell extends RenderAble{
   int x;
   int y;
+  Grid grid;
+  color lighting;
   boolean walkable = true;
   int size = GRID_SIZE;
   ArrayList<GridObject> objects = new ArrayList<GridObject>();
@@ -109,7 +131,9 @@ class GridCell extends RenderAble{
   }
   
   void render(PGraphics g){
+    g.tint(lighting);
     for(GridObject o : objects) o.render(g);
+    g.tint(color(255));
   }
   
   void renderGrid(PGraphics g){
@@ -139,12 +163,16 @@ class GridObject extends RenderAble{
   boolean animated = false;
   GridCell parentCell;
   
-  GridObject(int x, int y){
+  GridObject(int x, int y, GridCell cell){
     this.x = x;
     this.y = y;
+    parentCell = cell;
   }
   
   void setTexture(String s){
+    if(s == "chest.large"){
+      parentCell.grid.addLight(new Light(new Int2D(x, y), color(200, 255, 200), 12));
+    }
     tex = textures.get(s);
     texMod = textures.currentTheme;
     animated = textures.isAnimated(s);
