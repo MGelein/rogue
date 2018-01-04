@@ -218,4 +218,12 @@ class Theme{
   final Int2D dirt = new Int2D(14, 15);
   final Int2D dirt_dark = new Int2D(14, 18);
   final Int2D dirt_darker = new Int2D(14, 21);
+  
+  //liquid
+  final Int2D water_brick = new Int2D(0, 0);
+  final Int2D water_dirt = new Int2D(0, 2);
+  final Int2D water_wood = new Int2D(0, 4);
+  final Int2D poison_brick = new Int2D(0, 12);
+  final Int2D poison_dirt = new Int2D(0, 14);
+  final Int2D poison_wood = new Int2D(0, 16);
 }

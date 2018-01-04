@@ -71,9 +71,12 @@ class Game extends GameState{
     SmallFancyButton b = new SmallFancyButton(16, 16, YELLOW, "Test", textures.get("music.trumpet"));
     
     addRender(grid, b);
+    addUpdate(grid);
   }
   
   void update(){
+    super.update();
+    
     if(keys.isDownOnce(ENTER)) grid.load(dungeonGenerator);
     if(keys.isDownOnce(UP)) grid.viewPoint.y ++;
     if(keys.isDownOnce(DOWN)) grid.viewPoint.y --;

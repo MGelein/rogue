@@ -1,8 +1,10 @@
-class Grid extends RenderAble{
+class Grid extends RenderAble implements IUpdate{
   
   private GridCell[] cells;
   private int cols;
   private int rows;
+  private int animCounter = 0;
+  private int animRate = 60;
   Int2D viewPoint = new Int2D();
   boolean renderLines = false;
   
@@ -39,6 +41,13 @@ class Grid extends RenderAble{
   
   void update(){
     for(GridCell c : cells) c.update();
+    
+    //Also forward animation
+    animCounter++;
+    if(animCounter > animRate){
+      animCounter -= animRate;
+      for(GridCell c: cells) c.animate();
+    }
   }
   
   void render(PGraphics g){
@@ -47,7 +56,7 @@ class Grid extends RenderAble{
     g.translate(viewPoint.x * GRID_SIZE, viewPoint.y * GRID_SIZE);
         
     for(GridCell c : cells) {
-      c.render(g);
+      if(c.isVisible(viewPoint)) c.render(g);
     }
     if(renderLines){
       g.noFill();
@@ -79,13 +88,24 @@ class GridCell extends RenderAble{
     this.y = y;
   }
   
+  /** Check if we should render you*/
+  boolean isVisible(Int2D viewPoint){
+    if(x + viewPoint.x > COLS_VISIBLE || y + viewPoint.y > ROWS_VISIBLE) return false;
+    else if(x + viewPoint.x < 0 || y + viewPoint.y < 0) return false;
+    return true;
+  }
+  
   /** Called to empty this gridCell, completely removes all*/
   void empty(){
     objects = new ArrayList<GridObject>();
   }
   
   void update(){
-    for(GridObject o : objects) o.update();
+    for(GridObject o : objects) {o.update();}
+  }
+  
+  void animate(){
+    for(GridObject o : objects) {if(o.animated) o.animate();}
   }
   
   void render(PGraphics g){
@@ -112,7 +132,11 @@ class GridObject extends RenderAble{
   int x;
   int y;
   PImage tex;
+  String texName;
+  int texFrame = 0;
+  Int2D texMod = new Int2D();
   boolean walkable = false;
+  boolean animated = false;
   GridCell parentCell;
   
   GridObject(int x, int y){
@@ -122,9 +146,25 @@ class GridObject extends RenderAble{
   
   void setTexture(String s){
     tex = textures.get(s);
+    texMod = textures.currentTheme;
+    animated = textures.isAnimated(s);
+    texName = s;
   }
   
-  void update(){};
+  void setTexture(String s, boolean anim){
+    setTexture(s);
+    animated = anim;
+  }
+  
+  void update(){
+  };
+  
+  void animate(){
+    texFrame ++;
+    textures.setThemeModifier(texMod);
+    tex = textures.get(texName, texFrame);
+    textures.setThemeModifier(textures.theme.none);
+  }
   
   void render(PGraphics g){
     if(tex == null) return;
@@ -157,7 +197,7 @@ class GridObject extends RenderAble{
     else if(dungeonTile == dungeonGenerator.WALL_END_RIGHT) setTexture("wall.brick_end_right");
     else if(dungeonTile == dungeonGenerator.WALL_END) setTexture("wall.brick_end");
     
-    //FLOORS
+        //FLOORS
     else if(dungeonTile == dungeonGenerator.FLOOR_TL) setTexture("floor.brick_tl");
     else if(dungeonTile == dungeonGenerator.FLOOR_TM) setTexture("floor.brick_tm");
     else if(dungeonTile == dungeonGenerator.FLOOR_TR) setTexture("floor.brick_tr");
@@ -175,11 +215,26 @@ class GridObject extends RenderAble{
     else if(dungeonTile == dungeonGenerator.FLOOR_STRAIGHT_H) setTexture("floor.brick_straight_h");
     else if(dungeonTile == dungeonGenerator.FLOOR_SINGLE) setTexture("floor.brick_single");
     
+    
+    //Reset theme for non themed tiles
+    textures.setThemeModifier(textures.theme.none);
+    
     //DECORATION
-    else if(dungeonTile == dungeonGenerator.CHEST_LARGE) setTexture("chest.large");
+    if(dungeonTile == dungeonGenerator.CHEST_LARGE) setTexture("chest.large", false);
+    
+    textures.setThemeModifier(textures.theme.poison_brick);
+    //LIQUID
+    if(dungeonTile == dungeonGenerator.LIQUID) setTexture("pit.water_brick");
+    else if(dungeonTile == dungeonGenerator.LIQ_TL) setTexture("pit.water_brick_tl");
+    else if(dungeonTile == dungeonGenerator.LIQ_TM) setTexture("pit.water_brick_tm");
+    else if(dungeonTile == dungeonGenerator.LIQ_TR) setTexture("pit.water_brick_tr");
+    else if(dungeonTile == dungeonGenerator.LIQ_BL) setTexture("pit.water_brick_bl");
+    else if(dungeonTile == dungeonGenerator.LIQ_BM) setTexture("pit.water_brick_bm");
+    else if(dungeonTile == dungeonGenerator.LIQ_BR) setTexture("pit.water_brick_br");
     
     //Reset theme
     textures.setThemeModifier(textures.theme.none);
+    
     return this;
   }
 }
@@ -217,6 +272,10 @@ class Int2D{
     y = (y % 2 == 0) ? y + 1: y;
     return this;
   
+  }
+  
+  Int2D diff(Int2D b){
+    return new Int2D(x - b.x, y - b.y);
   }
   
   Int2D rndOdd(int maxX, int maxY){

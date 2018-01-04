@@ -4,25 +4,34 @@ class DungeonGenerator{
   int FLOOR = 1;
   int ROOM = 2;
   int VOID = 3;
+  int LIQUID = 4;
   
   //Wall types
-  int WALL_FLAT = 4;
-  int WALL_T_TOP = 5;
-  int WALL_T_BOTTOM = 6;
-  int WALL_T_LEFT = 7;
-  int WALL_T_RIGHT = 8;
-  int WALL_X = 9;
-  int WALL_STRAIGHT_V = 10;
-  int WALL_STRAIGHT_H = 11;
-  int WALL_CORNER_TL = 12;
-  int WALL_CORNER_BL = 13;
-  int WALL_CORNER_TR = 14;
-  int WALL_CORNER_BR = 15;
-  int WALL_END_BOTTOM = 16;
-  int WALL_END_TOP = 17;
-  int WALL_END_LEFT = 18;
-  int WALL_END_RIGHT = 19;
-  int WALL_END = 20;
+  int WALL_FLAT = 94;
+  int WALL_T_TOP = 95;
+  int WALL_T_BOTTOM = 96;
+  int WALL_T_LEFT = 97;
+  int WALL_T_RIGHT = 98;
+  int WALL_X = 99;
+  int WALL_STRAIGHT_V = 910;
+  int WALL_STRAIGHT_H = 911;
+  int WALL_CORNER_TL = 912;
+  int WALL_CORNER_BL = 913;
+  int WALL_CORNER_TR = 914;
+  int WALL_CORNER_BR = 915;
+  int WALL_END_BOTTOM = 916;
+  int WALL_END_TOP = 917;
+  int WALL_END_LEFT = 918;
+  int WALL_END_RIGHT = 919;
+  int WALL_END = 920;
+  
+  //Liquid types
+  int LIQ_TL = 201;
+  int LIQ_TM = 202;
+  int LIQ_TR = 203;
+  int LIQ_BL = 204;
+  int LIQ_BM = 205;
+  int LIQ_BR = 206;
   
   //Floor types
   int FLOOR_TL = 121;
@@ -183,12 +192,37 @@ class DungeonGenerator{
     }
     for(int index: voids) grid[index] = VOID;
     
-    //STEP 8: Wall & floor conversion
+    //STEP 8: Liquid creation
+    for(DungeonRoom room : rooms){
+      //If a room has more than 50 blocks, have a chance to spawn water
+      if(room.tiles.size() > 50){
+        if(random(1) < 1.0){//Random chance to spawn water
+          //Calculate the maximum size possible
+          Int2D maxSize = room.dim.copy().add(new Int2D(-2, -2));
+          Int2D minSize = new Int2D(3, 3);
+          //Get a random size between the two possible extremes
+          Int2D size = new Int2D(floor(random(minSize.x, maxSize.x)),
+                                 floor(random(minSize.y, maxSize.y)));
+                                 
+          //Find a good starting location and add it to the map
+          Int2D startPos = room.tiles.get(0).copy().add(new Int2D(1, 1));
+          for(int x = startPos.x; x < startPos.x + size.x; x++){
+            for(int y = startPos.y; y < startPos.y + size.y; y++){
+              setCell(x, y, LIQUID);
+            }
+          }
+        }
+      }
+    }
+    
+    //STEP 9: Wall & floor & liquid conversion
     for(int i = 0; i < grid.length; i++){
       if(grid[i] == WALL){
         grid[i] = convertWall(new Int2D(i % cols, floor(i / cols)));
       }else if(grid[i] == FLOOR){
         grid[i] = convertFloor(new Int2D(i % cols, floor(i / cols)));
+      }else if(grid[i] == LIQUID){
+        grid[i] = convertLiquid(new Int2D(i % cols, floor(i / cols)));
       }
     }
     
@@ -268,6 +302,24 @@ class DungeonGenerator{
     else return FLOOR_SINGLE;
   }
   
+  int convertLiquid(Int2D pos){
+    boolean left = isLiquid(getCell(pos.x - 1, pos.y));
+    boolean top = isLiquid(getCell(pos.x, pos.y - 1));
+    boolean bottom = isLiquid(getCell(pos.x, pos.y + 1));
+    boolean right = isLiquid(getCell(pos.x + 1, pos.y));
+    if(left && top && right) return LIQ_BM;
+    else if(left && bottom && right) return LIQ_TM;
+    else if(top && bottom && right) return LIQ_BL;
+    else if(top && bottom && left) return LIQ_BR;
+    else if(top && bottom) return LIQ_BM;
+    else if(left && right) return LIQ_TM;
+    else if(bottom && right) return LIQ_TL;
+    else if(bottom && left) return LIQ_TR;
+    else if(top && right) return LIQ_BL;
+    else if(top && left) return LIQ_BR;
+    else return LIQ_BM;
+  }
+  
   boolean isWalkAble(int n){
     return isFloor(n) || n == VOID;
   }
@@ -277,6 +329,10 @@ class DungeonGenerator{
     || n == WALL_T_RIGHT || n == WALL_X || n == WALL_STRAIGHT_V || n == WALL_STRAIGHT_H
     || n == WALL_CORNER_TL || n == WALL_CORNER_BL || n == WALL_CORNER_TR || n == WALL_CORNER_BR
     || n == WALL_END_BOTTOM || n == WALL_END_TOP || n == WALL_END_LEFT || n == WALL_END_RIGHT;
+  }
+  
+  boolean isLiquid(int n){
+    return n == LIQUID || n == LIQ_TL || n == LIQ_TM || n == LIQ_TR || n == LIQ_BL || n == LIQ_BM || n == LIQ_BR;
   }
   
   boolean isFloor(int n){
@@ -355,6 +411,7 @@ class DungeonGenerator{
     //Now check if any of the tiles intersect with already created tiles.
     //If not, add the tile to the a new dungeonroom.
     DungeonRoom r = new DungeonRoom();
+    r.dim = dim.copy();
     for(int x = pos.x; x < pos.x + dim.x; x++){
       for(int y = pos.y; y < pos.y + dim.y; y++){
         if(getCell(x, y) == ROOM) return;
@@ -371,6 +428,7 @@ class DungeonGenerator{
   
   /** Inner class contains the dungeon room*/
   class DungeonRoom{
+    Int2D dim;
     /** List of coords of the tiles in this room*/
     ArrayList<Int2D> tiles = new ArrayList<Int2D>();
     

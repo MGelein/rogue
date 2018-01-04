@@ -1,6 +1,8 @@
 int SCL = 2;
-int GRID_SCL = 2;
+int GRID_SCL = 1;
 int SIZE = 16;
+int COLS_VISIBLE;
+int ROWS_VISIBLE;
 int GRID_SIZE = SIZE * GRID_SCL;
 int RED = 0, HP = 0;
 int BLUE = 1, MANA = 1;
@@ -23,8 +25,8 @@ void settings(){
   //First load the game ini file
   registry.load("game.ini", "game");
   FULLSCREEN = registry.getBoolean("game.fullscreen");
-  DRAW_FPS = registry.getBoolean("game.show_fps");  
- 
+  DRAW_FPS = registry.getBoolean("game.show_fps"); 
+  
   if(FULLSCREEN){
     fullScreen();
   }else{
@@ -37,6 +39,8 @@ void settings(){
 void setup(){
   //Black background while waiting to load
   background(0);
+  COLS_VISIBLE = width / (SCL * GRID_SCL * SIZE);
+  ROWS_VISIBLE = height / (SCL * GRID_SCL * SIZE);
   
   //Load the ini files for the textures (spritesheet indexing)
   registry.load("textures.ini", "tex");
