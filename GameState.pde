@@ -67,7 +67,10 @@ class Game extends GameState{
   Game(){
     grid = new Grid(51, 51);
     grid.load(dungeonGenerator);
-    addRender(grid);
+    
+    SmallFancyButton b = new SmallFancyButton(16, 16, YELLOW, "Test", textures.get("music.trumpet"));
+    
+    addRender(grid, b);
   }
   
   void update(){

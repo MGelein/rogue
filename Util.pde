@@ -16,6 +16,6 @@ public <E> E random(ArrayList<E> list){
 Returns if the random small change was met. For example oneIn(50) has a 
 2 percent change of succeeding
 */
-boolean oneIn(int chance){
+boolean oneIn(float chance){
   return random(1) < (1 / chance);
 }

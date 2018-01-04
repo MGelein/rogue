@@ -27,6 +27,14 @@ class Grid extends RenderAble{
       get(i).empty();
       get(i).add(new GridObject(x, y).parse(dungeon[i]));
     }
+    
+    //Now generate decoration for this dungeon
+    int[] decoration = generator.generateDecoration();
+    for(int i = 0; i < decoration.length; i++){
+      int x = i % cols;
+      int y = floor(i / cols);
+      get(i).add(new GridObject(x, y).parse(decoration[i]));
+    }
   }
   
   void update(){
@@ -36,7 +44,7 @@ class Grid extends RenderAble{
   void render(PGraphics g){
     //Translate matrix for map viewing.
     g.pushMatrix();
-    g.translate(viewPoint.x * SIZE, viewPoint.y * SIZE);
+    g.translate(viewPoint.x * GRID_SIZE, viewPoint.y * GRID_SIZE);
         
     for(GridCell c : cells) {
       c.render(g);
@@ -63,7 +71,7 @@ class GridCell extends RenderAble{
   int x;
   int y;
   boolean walkable = true;
-  int size = SIZE;
+  int size = GRID_SIZE;
   ArrayList<GridObject> objects = new ArrayList<GridObject>();
   
   GridCell(int x, int y){
@@ -85,12 +93,13 @@ class GridCell extends RenderAble{
   }
   
   void renderGrid(PGraphics g){
-    g.rect(x * SIZE, y * SIZE, x * SIZE + SIZE, y * SIZE + SIZE);
+    g.rect(x * size, y * size, x * size + size, y * size + size);
   }
   
   void add(GridObject o){
     o.parentCell = this;
     objects.add(o);
+    if(!o.walkable) walkable = false;
   }
   
   void remove(GridObject o){
@@ -103,6 +112,7 @@ class GridObject extends RenderAble{
   int x;
   int y;
   PImage tex;
+  boolean walkable = false;
   GridCell parentCell;
   
   GridObject(int x, int y){
@@ -118,12 +128,12 @@ class GridObject extends RenderAble{
   
   void render(PGraphics g){
     if(tex == null) return;
-    g.image(tex, x * SIZE, y * SIZE);
+    g.image(tex, x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
   }
   
   GridObject parse(int dungeonTile){
     //According to tileType set walkability to false if not already false
-    if(! dungeonGenerator.isWalkAble(dungeonTile)) parentCell.walkable = false;   
+    walkable = dungeonGenerator.isWalkAble(dungeonTile);
     
     //Set theme
     textures.setThemeModifier(textures.theme.none);
@@ -131,7 +141,7 @@ class GridObject extends RenderAble{
     if(dungeonTile == dungeonGenerator.FLOOR) setTexture("floor.brick_mm");
     else if(dungeonTile == dungeonGenerator.WALL_FLAT) setTexture("wall.brick_flat");
     else if(dungeonTile == dungeonGenerator.WALL_T_TOP) setTexture("wall.brick_tjunction_top");
-    else if(dungeonTile == dungeonGenerator.WALL_T_BOTTOM) setTexture("wall.brick_tjunction_bottom");
+    else if(dungeonTile == dungeonGenerator.WALL_T_BOTTOM  ) setTexture("wall.brick_tjunction_bottom");
     else if(dungeonTile == dungeonGenerator.WALL_T_LEFT) setTexture("wall.brick_tjunction_left");
     else if(dungeonTile == dungeonGenerator.WALL_T_RIGHT) setTexture("wall.brick_tjunction_right");
     else if(dungeonTile == dungeonGenerator.WALL_X) setTexture("wall.brick_xjunction");
@@ -164,6 +174,9 @@ class GridObject extends RenderAble{
     else if(dungeonTile == dungeonGenerator.FLOOR_STRAIGHT_V) setTexture("floor.brick_straight_v");
     else if(dungeonTile == dungeonGenerator.FLOOR_STRAIGHT_H) setTexture("floor.brick_straight_h");
     else if(dungeonTile == dungeonGenerator.FLOOR_SINGLE) setTexture("floor.brick_single");
+    
+    //DECORATION
+    else if(dungeonTile == dungeonGenerator.CHEST_LARGE) setTexture("chest.large");
     
     //Reset theme
     textures.setThemeModifier(textures.theme.none);

@@ -1,5 +1,7 @@
 int SCL = 2;
+int GRID_SCL = 2;
 int SIZE = 16;
+int GRID_SIZE = SIZE * GRID_SCL;
 int RED = 0, HP = 0;
 int BLUE = 1, MANA = 1;
 int GREEN = 2, STAMINA = 2;

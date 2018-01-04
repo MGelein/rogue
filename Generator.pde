@@ -42,6 +42,9 @@ class DungeonGenerator{
   int FLOOR_STRAIGHT_V = 135;
   int FLOOR_SINGLE = 136;
   
+  //Object types
+  int CHEST_LARGE = 236;
+  
   
   //Amt of tries to place a room in the grid
   int roomDensity = 60;
@@ -64,7 +67,7 @@ class DungeonGenerator{
   ArrayList<DungeonRoom> rooms = new ArrayList<DungeonRoom>();
   
   //Integer grid, every integer is one of the objcts
-  int[] objectGrid;
+  int[] decoration;
   
   /** Returns a cell from the grid, prevents out of bounds exceptions*/
   int getCell(int x, int y){
@@ -193,13 +196,22 @@ class DungeonGenerator{
     return grid;
   }
   
-  int[] generateObjectLayer(){
+  int[] generateDecoration(){
     //STEP 0: Setup for creation
-    objectGrid = new int[cols * rows];
-    for(int i = 0; i < objectGrid.length; i++) objectGrid[i] = VOID;
+    decoration = new int[cols * rows];
+    for(int i = 0; i < decoration.length; i++) decoration[i] = VOID;
+    
+    //STEP 1: Generate chests
+    for(int i = 0; i < grid.length; i++){
+      if(isFloor(grid[i])){
+        if(oneIn(50)){
+          decoration[i] = CHEST_LARGE;
+        }
+      }
+    }
     
     //STEP FINAL: return the grid
-    return objectGrid;
+    return decoration;
   }
   
   /**
