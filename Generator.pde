@@ -53,6 +53,7 @@ class DungeonGenerator{
   
   //Object types
   int CHEST_LARGE = 236;
+  int LANTERN = 237;
   
   
   //Amt of tries to place a room in the grid
@@ -239,7 +240,7 @@ class DungeonGenerator{
     for(int i = 0; i < grid.length; i++){
       if(isFloor(grid[i])){
         if(oneIn(50)){
-          decoration[i] = CHEST_LARGE;
+          decoration[i] = LANTERN;
         }
       }
     }
@@ -322,6 +323,10 @@ class DungeonGenerator{
   
   boolean isWalkAble(int n){
     return isFloor(n) || n == VOID;
+  }
+  
+  boolean isOpaque(int n){
+    return isFloor(n) || isLiquid(n);
   }
   
   boolean isWall(int n){

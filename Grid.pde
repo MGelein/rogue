@@ -2,11 +2,11 @@ class Grid extends RenderAble implements IUpdate{
   
   private ArrayList<Light> lights = new ArrayList<Light>();
   private GridCell[] cells;
-  private int cols;
-  private int rows;
+  int cols;
+  int rows;
   private int animCounter = 0;
   private int animRate = 60;
-  private int ambientLight = color(10, 200, 220);
+  private int ambientLight = color(0, 0, 60);
   Int2D viewPoint = new Int2D();
   boolean renderLines = false;
   
@@ -45,14 +45,15 @@ class Grid extends RenderAble implements IUpdate{
   }
   
   void calcLighting(){
+    //Reset all cells to ambient
     for(GridCell c : cells) c.lighting = ambientLight;
     
+    //Recalculate all lighting
     for(Light l : lights) l.calculate();
   }
   
   void addLight(Light l){
     lights.add(l);
-    l.grid = this;
   }
   
   void removeLight(Light l){
@@ -102,6 +103,7 @@ class GridCell extends RenderAble{
   Grid grid;
   color lighting;
   boolean walkable = true;
+  boolean opaque = false;
   int size = GRID_SIZE;
   ArrayList<GridObject> objects = new ArrayList<GridObject>();
   
@@ -144,6 +146,7 @@ class GridCell extends RenderAble{
     o.parentCell = this;
     objects.add(o);
     if(!o.walkable) walkable = false;
+    if(!o.opaque) opaque = false;
   }
   
   void remove(GridObject o){
@@ -160,6 +163,7 @@ class GridObject extends RenderAble{
   int texFrame = 0;
   Int2D texMod = new Int2D();
   boolean walkable = false;
+  boolean opaque = false;
   boolean animated = false;
   GridCell parentCell;
   
@@ -170,8 +174,8 @@ class GridObject extends RenderAble{
   }
   
   void setTexture(String s){
-    if(s == "chest.large"){
-      parentCell.grid.addLight(new Light(new Int2D(x, y), color(200, 255, 200), 12));
+    if(s == "light.lantern"){
+      parentCell.grid.addLight(new Light(new Int2D(x, y), color(25, 255, 200), 6, parentCell.grid));
     }
     tex = textures.get(s);
     texMod = textures.currentTheme;
@@ -202,6 +206,7 @@ class GridObject extends RenderAble{
   GridObject parse(int dungeonTile){
     //According to tileType set walkability to false if not already false
     walkable = dungeonGenerator.isWalkAble(dungeonTile);
+    opaque = dungeonGenerator.isOpaque(dungeonTile);
     
     //Set theme
     textures.setThemeModifier(textures.theme.none);
@@ -249,6 +254,7 @@ class GridObject extends RenderAble{
     
     //DECORATION
     if(dungeonTile == dungeonGenerator.CHEST_LARGE) setTexture("chest.large", false);
+    else if(dungeonTile == dungeonGenerator.LANTERN) setTexture("light.lantern");
     
     textures.setThemeModifier(textures.theme.poison_brick);
     //LIQUID
