@@ -238,4 +238,5 @@ class Theme{
   final Int2D poison_brick = new Int2D(0, 12);
   final Int2D poison_dirt = new Int2D(0, 14);
   final Int2D poison_wood = new Int2D(0, 16);
+  final Int2D lava = new Int2D(0, 18);
 }

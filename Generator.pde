@@ -272,6 +272,17 @@ class DungeonGenerator{
       }
     }
     
+    /* Place the player in the startRoom*/
+    DungeonRoom startRoom = random(rooms);
+    Int2D startPos = random(startRoom.tiles);
+    GridCell startHolder = gameGrid.get(startPos.x, startPos.y);
+    decoration.add(new Player(startPos.x, startPos.y, startHolder));
+    
+    /* Pick a room to decorate*/
+    for(DungeonRoom r : rooms){
+      
+    }
+    
     //STEP FINAL: return the grid
     return decoration;
   }

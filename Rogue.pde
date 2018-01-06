@@ -9,7 +9,7 @@ int BLUE = 1, MANA = 1;
 int GREEN = 2, STAMINA = 2;
 int YELLOW = 3, GOLD = 3;
 
-boolean DRAW_FPS = false;  
+boolean DRAW_FPS = false;
 float FRAME_RATE = 60;
 boolean FULLSCREEN = true;
 
@@ -18,7 +18,6 @@ Registry registry = new Registry();
 GameState currentState;
 Textures textures;
 Lights lights;
-
 DungeonGenerator dungeonGenerator = new DungeonGenerator();
 
 PGraphics stage;

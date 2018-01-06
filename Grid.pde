@@ -10,6 +10,7 @@ class Grid extends MouseAble implements IUpdate{
   Int2D viewPoint = new Int2D();
   boolean renderLines = false;
   boolean lightingUpdate = false;
+  Player player;
   
   Grid(int maxCols, int maxRows){
     rows = maxRows;
@@ -54,8 +55,10 @@ class Grid extends MouseAble implements IUpdate{
   
   void mouseDown(int x, int y){
     Int2D clickPos = new Int2D(floor(x / GRID_SIZE), floor(y / GRID_SIZE));
+    clickPos.sub(floor(COLS_VISIBLE / 2), floor(ROWS_VISIBLE / 2));
     clickPos.add(viewPoint);
     get(clickPos).click();
+    get(clickPos).listObjects();
   }
   
   void addLight(Light l){
@@ -85,7 +88,8 @@ class Grid extends MouseAble implements IUpdate{
   void render(PGraphics g){
     //Translate matrix for map viewing.
     g.pushMatrix();
-    g.translate(-viewPoint.x * GRID_SIZE, -viewPoint.y * GRID_SIZE);
+    g.translate((-viewPoint.x + COLS_VISIBLE / 2) * GRID_SIZE,
+                (-viewPoint.y + ROWS_VISIBLE / 2) * GRID_SIZE);
         
     for(GridCell c : cells) {
       if(c.isVisible(viewPoint)) c.render(g);
@@ -120,17 +124,54 @@ class GridCell extends RenderAble{
   boolean opaque = false;
   int size = GRID_SIZE;
   ArrayList<GridObject> objects = new ArrayList<GridObject>();
+  ArrayList<GridObject> toAdd = new ArrayList<GridObject>();
+  ArrayList<GridObject> toRemove = new ArrayList<GridObject>();
   
   GridCell(int x, int y){
     this.x = x;
     this.y = y;
   }
   
+  void listObjects(){
+    println("Objects in this Cell:");
+    for(GridObject o : objects){
+      println(" - " + o.texName);
+    }
+  }
+  
   /** Check if we should render you*/
   boolean isVisible(Int2D viewPoint){
-    if(x - viewPoint.x > COLS_VISIBLE || y - viewPoint.y > ROWS_VISIBLE) return false;
-    else if(x - viewPoint.x < 0 || y - viewPoint.y < 0) return false;
-    return true;
+    x += floor(COLS_VISIBLE / 2);
+    y += floor(ROWS_VISIBLE / 2);
+    
+    boolean visible = true;
+    if(x - viewPoint.x > COLS_VISIBLE|| y - viewPoint.y > ROWS_VISIBLE) visible = false;
+    else if(x - viewPoint.x < 0 || y - viewPoint.y < 0) visible = false;
+    
+    x-= floor(COLS_VISIBLE / 2);
+    y-= floor(ROWS_VISIBLE / 2);
+    
+    return visible;
+  }
+  
+  void calcWalkable(){
+    walkable = true;
+    for(GridObject o : objects){
+      if(!o.walkable){
+        walkable = false;
+        break;
+      }
+    }
+  }
+  
+  void calcOpaque(){
+    opaque = false;
+    for(GridObject o : objects){
+      if(o.opaque){
+        opaque = true;
+        break;
+      }
+    }
   }
   
   /** Called to empty this gridCell, completely removes all*/
@@ -141,7 +182,29 @@ class GridCell extends RenderAble{
   }
   
   void update(){
+    //First do list maintenance
+    listMaintenance();
+    //Now update all objects
     for(GridObject o : objects) {o.update();}
+  }
+  
+  void listMaintenance(){
+    if(toRemove.size() > 0 || toAdd.size() > 0){
+      //First remove those objects that need to be removed
+      if(toRemove.size() > 0){
+        for(GridObject o : toRemove){ objects.remove(o);}
+        toRemove.clear();
+      }
+      
+      //Then add the objects that need to be added
+      if(toAdd.size() > 0){
+        for(GridObject o : toAdd){ objects.add(o);}
+        toAdd.clear();
+      }
+      
+      calcWalkable();
+      calcOpaque();
+    }
   }
   
   void animate(){
@@ -153,6 +216,9 @@ class GridCell extends RenderAble{
   }
   
   void render(PGraphics g){
+    //First do list maintenance
+    listMaintenance();
+    //Then render
     g.tint(lighting);
     for(GridObject o : objects) o.render(g);
     g.tint(color(255));
@@ -164,13 +230,11 @@ class GridCell extends RenderAble{
   
   void add(GridObject o){
     o.parentCell = this;
-    objects.add(o);
-    if(!o.walkable) walkable = false;
-    if(o.opaque) opaque = true;
+    toAdd.add(o);
   }
   
   void remove(GridObject o){
-    objects.remove(o);
+    toRemove.add(o);
   }
   
   void parseTile(String tile){
@@ -217,6 +281,7 @@ class GridObject extends RenderAble{
   };
   
   void animate(){
+    if(tex == null) return;
     texFrame ++;
     textures.setThemeModifier(texMod);
     tex = textures.get(texName, texFrame);
@@ -233,7 +298,11 @@ class GridObject extends RenderAble{
     walkable = dungeonGenerator.isWalkAble(dungeonTile);
     opaque = dungeonGenerator.isOpaque(dungeonTile);
     if(dungeonGenerator.isFloor(dungeonTile) || dungeonGenerator.isWall(dungeonTile)){
-      textures.setThemeModifier(textures.theme.temple);
+      textures.setThemeModifier(textures.theme.brick_darker);
+    }
+    
+    if(dungeonGenerator.isLiquid(dungeonTile)){
+      textures.setThemeModifier(textures.theme.lava);
     }
     
     //If it is not a void tile, set the texture
@@ -291,6 +360,16 @@ class Int2D{
     return rndOdd(0, maxX, 0, maxY);
   }
   
+  Int2D set(int x, int y){
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+  
+  Int2D set(Int2D b){
+    return set(b.x, b.y);
+  }
+  
   Int2D copy(){
     return new Int2D(x, y);
   }
@@ -298,6 +377,13 @@ class Int2D{
   Int2D add(Int2D b){
     x += b.x;
     y += b.y;
+    return this;
+  }
+  
+  Int2D sub(Int2D b){return sub(b.x, b.y);}
+  Int2D sub(int bx, int by){
+    x -= bx;
+    y -= by;
     return this;
   }
   

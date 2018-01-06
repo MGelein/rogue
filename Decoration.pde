@@ -67,8 +67,10 @@ class Door extends GridObject{
     animate();
     
     //Set cell walkable
-    parentCell.walkable = open;
-    parentCell.opaque = !open;
+    walkable = open;
+    opaque = !open;
+    parentCell.calcWalkable();
+    parentCell.calcOpaque();
     
     //Also update all lighting now the door has opened
     parentCell.grid.lightingUpdate = true;
@@ -84,5 +86,15 @@ class Bones extends GridObject{
     super(x, y, parent);
     parse(random(boneTypes));
     opaque = walkable = false;
+  }
+  
+  void interact(){
+    walkable = true;
+    opaque = false;
+    texName = null;
+    tex = null;
+    parentCell.calcWalkable();
+    parentCell.calcOpaque();
+    parentCell.remove(this);
   }
 }
