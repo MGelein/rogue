@@ -1,59 +1,60 @@
 class DungeonGenerator{
   //Tile types
-  int WALL = 0;
-  int FLOOR = 1;
-  int ROOM = 2;
-  int VOID = 3;
-  int LIQUID = 4;
+  String WALL = "wall";
+  String FLOOR = "floor";
+  String ROOM = "room";
+  String VOID = "void";
+  String LIQUID = "pit";
   
   //Wall types
-  int WALL_FLAT = 94;
-  int WALL_T_TOP = 95;
-  int WALL_T_BOTTOM = 96;
-  int WALL_T_LEFT = 97;
-  int WALL_T_RIGHT = 98;
-  int WALL_X = 99;
-  int WALL_STRAIGHT_V = 910;
-  int WALL_STRAIGHT_H = 911;
-  int WALL_CORNER_TL = 912;
-  int WALL_CORNER_BL = 913;
-  int WALL_CORNER_TR = 914;
-  int WALL_CORNER_BR = 915;
-  int WALL_END_BOTTOM = 916;
-  int WALL_END_TOP = 917;
-  int WALL_END_LEFT = 918;
-  int WALL_END_RIGHT = 919;
-  int WALL_END = 920;
+  String WALL_FLAT = "wall.brick_flat";
+  String WALL_T_TOP = "wall.brick_tjunction_top";
+  String WALL_T_BOTTOM = "wall.brick_tjunction_bottom";
+  String WALL_T_LEFT = "wall.brick_tjunction_left";
+  String WALL_T_RIGHT = "wall.brick_tjunction_right";
+  String WALL_X = "wall.brick_xjunction";
+  String WALL_STRAIGHT_V = "wall.brick_straight_v";
+  String WALL_STRAIGHT_H = "wall.brick_straight_h";
+  String WALL_CORNER_TL = "wall.brick_corner_tl";
+  String WALL_CORNER_BL = "wall.brick_corner_bl";
+  String WALL_CORNER_TR = "wall.brick_corner_tr";
+  String WALL_CORNER_BR = "wall.brick_corner_br";
+  String WALL_END_BOTTOM = "wall.brick_end_down";
+  String WALL_END_TOP = "wall.brick_end_top";
+  String WALL_END_LEFT = "wall.brick_end_left";
+  String WALL_END_RIGHT = "wall.brick_end_right";
+  String WALL_END = "wall.brick_end";
   
   //Liquid types
-  int LIQ_TL = 201;
-  int LIQ_TM = 202;
-  int LIQ_TR = 203;
-  int LIQ_BL = 204;
-  int LIQ_BM = 205;
-  int LIQ_BR = 206;
+  String LIQ_TL = "pit.water_brick_tl";
+  String LIQ_TM = "pit.water_brick_tm";
+  String LIQ_TR = "pit.water_brick_tr";
+  String LIQ_BL = "pit.water_brick_bl";
+  String LIQ_BM = "pit.water_brick_bm";
+  String LIQ_BR = "pit.water_brick_br";
   
   //Floor types
-  int FLOOR_TL = 121;
-  int FLOOR_TM = 122;
-  int FLOOR_TR = 123;
-  int FLOOR_ML = 124;
-  int FLOOR_MM = 125;
-  int FLOOR_MR = 126;
-  int FLOOR_BL = 127;
-  int FLOOR_BM = 128;
-  int FLOOR_BR = 129;
-  int FLOOR_END_TOP = 130;
-  int FLOOR_END_BOTTOM = 131;
-  int FLOOR_END_LEFT = 132;
-  int FLOOR_END_RIGHT = 133;
-  int FLOOR_STRAIGHT_H = 134;
-  int FLOOR_STRAIGHT_V = 135;
-  int FLOOR_SINGLE = 136;
+  String FLOOR_TL = "floor.brick_tl";
+  String FLOOR_TM = "floor.brick_tm";
+  String FLOOR_TR = "floor.brick_tr";
+  String FLOOR_ML = "floor.brick_ml";
+  String FLOOR_MM = "floor.brick_mm";
+  String FLOOR_MR = "floor.brick_mr";
+  String FLOOR_BL = "floor.brick_bl";
+  String FLOOR_BM = "floor.brick_bm";
+  String FLOOR_BR = "floor.brick_br";
+  String FLOOR_END_TOP = "floor.brick_end_top";
+  String FLOOR_END_BOTTOM = "floor.brick_end_bottom";
+  String FLOOR_END_LEFT = "floor.brick_end_left";
+  String FLOOR_END_RIGHT = "floor.brick_end_right";
+  String FLOOR_STRAIGHT_H = "floor.brick_straight_h";
+  String FLOOR_STRAIGHT_V = "floor.brick_straight_v";
+  String FLOOR_SINGLE = "floor.brick_single";
   
   //Object types
-  int CHEST_LARGE = 236;
-  int LANTERN = 237;
+  String CHEST_LARGE = "chest.large";
+  String LANTERN = "light.lantern";
+  String TORCH = "light.torch";
   
   
   //Amt of tries to place a room in the grid
@@ -67,8 +68,8 @@ class DungeonGenerator{
   //Minimum size of a generated room
   int min_size = 5;
   
-  //Integer grid. Every integer is of one of the tile types
-  int[] grid;
+  //String grid. Every String is of one of the tile types
+  String[] grid;
   //Amt of columns in this grid
   int cols;
   //Amt of rows in this grid
@@ -76,30 +77,30 @@ class DungeonGenerator{
   //List of all rooms in this dungeon
   ArrayList<DungeonRoom> rooms = new ArrayList<DungeonRoom>();
   
-  //Integer grid, every integer is one of the objcts
-  int[] decoration;
+  //String grid, every String is one of the objcts
+  String[] decoration;
   
   /** Returns a cell from the grid, prevents out of bounds exceptions*/
-  int getCell(int x, int y){
+  String getCell(int x, int y){
     return grid[constrain(x + y * cols, 0, grid.length - 1)];
   }
   /** Returns a cell from the grid, prevents out of bounds exceptions*/
-  int getCell(Int2D pos){ return getCell(pos.x, pos.y);}
+  String getCell(Int2D pos){ return getCell(pos.x, pos.y);}
   
   /** Sets the cell at the specified coordinate to the specified value*/
-  void setCell(int x, int y, int value){
+  void setCell(int x, int y, String value){
     if(x < 0 || x >= cols || y < 0 || y>= rows) return;
     grid[x + y * cols] = value;
   }
   /** Sets the cell at the specified coordinate to the specified value*/
-  void setCell(Int2D pos, int value){ setCell(pos.x, pos.y, value);}
+  void setCell(Int2D pos, String value){ setCell(pos.x, pos.y, value);}
   
   /** Generates a new dungeon with the specified size*/
-  int[] generate(int c, int r){
+  String[] generate(int c, int r){
     //STEP 0: Set everythings as solid walls and create the lists
     cols = c;
     rows = r;
-    grid = new int[cols * rows];
+    grid = new String[cols * rows];
     for(int i = 0; i < grid.length; i++) grid[i] = WALL;
     rooms.clear();
     
@@ -144,7 +145,7 @@ class DungeonGenerator{
       pos.x = i % cols;
       pos.y = floor(i / cols);
       //Only continue on walls
-      if(getCell(pos) == WALL){
+      if(isWall(getCell(pos))){
         //Only walls that are not outside bounds
         if(pos.x > 0 && pos.x <= cols - 2 && pos.y > 0 && pos.y <= rows - 2){
           //Only walls that are dividers (isStraightWall)
@@ -160,7 +161,7 @@ class DungeonGenerator{
     do{
       found = 0;
       for(int i = 0; i < grid.length; i++){
-        if(grid[i] == FLOOR){//On all floors check if they are dead ends
+        if(isFloor(grid[i])){//On all floors check if they are dead ends
           pos.x = i % cols;
           pos.y = floor(i / cols);
           if(isDeadEnd(pos)){
@@ -177,16 +178,16 @@ class DungeonGenerator{
       pos.x = i % cols;
       pos.y = floor(i / cols);
       //Only check wall cells
-      if(getCell(pos) == WALL){
-        int left = getCell(pos.x - 1, pos.y);
-        int tl = getCell(pos.x - 1, pos.y - 1);
-        int right = getCell(pos.x + 1, pos.y);
-        int tr = getCell(pos.x + 1, pos.y - 1);
-        int up = getCell(pos.x, pos.y - 1);
-        int bl = getCell(pos.x - 1, pos.y + 1);
-        int down = getCell(pos.x, pos.y + 1);
-        int br = getCell(pos.x + 1, pos.y + 1);
-        if(tl + left + tr + up + down + bl + br + right <= 0){
+      if(isWall(getCell(pos))){
+        boolean left = isWall(getCell(pos.x - 1, pos.y));
+        boolean tl = isWall(getCell(pos.x - 1, pos.y - 1));
+        boolean right = isWall(getCell(pos.x + 1, pos.y));
+        boolean tr = isWall(getCell(pos.x + 1, pos.y - 1));
+        boolean up = isWall(getCell(pos.x, pos.y - 1));
+        boolean bl = isWall(getCell(pos.x - 1, pos.y + 1));
+        boolean down = isWall(getCell(pos.x, pos.y + 1));
+        boolean br = isWall(getCell(pos.x + 1, pos.y + 1));
+        if(tl && left && tr && up && down && bl && br && right){
           voids.add(i);
         }
       }
@@ -231,9 +232,9 @@ class DungeonGenerator{
     return grid;
   }
   
-  int[] generateDecoration(){
+  String[] generateDecoration(){
     //STEP 0: Setup for creation
-    decoration = new int[cols * rows];
+    decoration = new String[cols * rows];
     for(int i = 0; i < decoration.length; i++) decoration[i] = VOID;
     
     //STEP 1: Generate chests
@@ -252,7 +253,7 @@ class DungeonGenerator{
   /**
   Converts the wall at the specified position into the right type of wall
   **/
-  int convertWall(Int2D pos){
+  String convertWall(Int2D pos){
     boolean left = isWall(getCell(pos.x - 1, pos.y));
     if(pos.x == 0) left = false;
     boolean top = isWall(getCell(pos.x, pos.y - 1));
@@ -280,7 +281,7 @@ class DungeonGenerator{
   }
   
   /** Converts floor into proper tiled floors */
-  int convertFloor(Int2D pos){
+  String convertFloor(Int2D pos){
     boolean left = isFloor(getCell(pos.x - 1, pos.y));
     boolean top = isFloor(getCell(pos.x, pos.y - 1));
     boolean bottom = isFloor(getCell(pos.x, pos.y + 1));
@@ -303,7 +304,7 @@ class DungeonGenerator{
     else return FLOOR_SINGLE;
   }
   
-  int convertLiquid(Int2D pos){
+  String convertLiquid(Int2D pos){
     boolean left = isLiquid(getCell(pos.x - 1, pos.y));
     boolean top = isLiquid(getCell(pos.x, pos.y - 1));
     boolean bottom = isLiquid(getCell(pos.x, pos.y + 1));
@@ -321,51 +322,52 @@ class DungeonGenerator{
     else return LIQ_BM;
   }
   
-  boolean isWalkAble(int n){
-    return isFloor(n) || n == VOID;
+  boolean isWalkAble(String s){
+    return isFloor(s) || s.equals(VOID);
   }
   
-  boolean isOpaque(int n){
-    return isFloor(n) || isLiquid(n);
+  boolean isOpaque(String s){
+    return isFloor(s) || isLiquid(s);
   }
   
-  boolean isWall(int n){
-    return n == WALL || n == WALL_FLAT || n == WALL_T_TOP || n == WALL_T_BOTTOM || n == WALL_T_LEFT
-    || n == WALL_T_RIGHT || n == WALL_X || n == WALL_STRAIGHT_V || n == WALL_STRAIGHT_H
-    || n == WALL_CORNER_TL || n == WALL_CORNER_BL || n == WALL_CORNER_TR || n == WALL_CORNER_BR
-    || n == WALL_END_BOTTOM || n == WALL_END_TOP || n == WALL_END_LEFT || n == WALL_END_RIGHT;
+  boolean isType(String type, String s){
+    return  s.substring(0, constrain(type.length(), 0, s.length())).equals(type);
   }
   
-  boolean isLiquid(int n){
-    return n == LIQUID || n == LIQ_TL || n == LIQ_TM || n == LIQ_TR || n == LIQ_BL || n == LIQ_BM || n == LIQ_BR;
+  boolean isWall(String s){
+    return  isType(WALL, s);
   }
   
-  boolean isFloor(int n){
-    return n == FLOOR || n == FLOOR_TL || n == FLOOR_TM || n == FLOOR_TR
-    || n == FLOOR_ML || n == FLOOR_MM || n == FLOOR_MR || n == FLOOR_BL || n == FLOOR_BM
-    || n == FLOOR_BR || n == FLOOR_END_TOP || n == FLOOR_END_BOTTOM || n == FLOOR_END_LEFT
-    || n == FLOOR_END_RIGHT || n == FLOOR_STRAIGHT_V || n == FLOOR_STRAIGHT_H
-    || n == FLOOR_SINGLE;
+  boolean isLiquid(String s){
+    return isType(LIQUID, s);
+  }
+  
+  boolean isFloor(String s){
+    return isType(FLOOR, s);
+  }
+  
+  boolean isRoom(String s){
+    return isType(ROOM, s);
   }
   
   /**Checks if the provided piece of path is a dead end*/
   boolean isDeadEnd(Int2D pos){
     int wallCount = 0;
-    if(getCell(pos.x - 1, pos.y) == WALL) wallCount ++;
-    if(getCell(pos.x + 1, pos.y) == WALL) wallCount ++;
-    if(getCell(pos.x, pos.y - 1) == WALL) wallCount ++;
-    if(getCell(pos.x, pos.y + 1) == WALL) wallCount ++;
+    if(isWall(getCell(pos.x - 1, pos.y))) wallCount ++;
+    if(isWall(getCell(pos.x + 1, pos.y))) wallCount ++;
+    if(isWall(getCell(pos.x, pos.y - 1))) wallCount ++;
+    if(isWall(getCell(pos.x, pos.y + 1))) wallCount ++;
     //If we find more than 2 walls, this is a dead end
     return wallCount >= 3;
   }
   
   /** If this is a divider wall (straight wall with floors on either side)*/
   boolean isStraightWall(Int2D pos){
-    int left = getCell(pos.x - 1, pos.y);
-    int right = getCell(pos.x + 1, pos.y);
-    int up = getCell(pos.x, pos.y - 1);
-    int down = getCell(pos.x, pos.y + 1);
-    return left == right && up == down && left != up;
+    String left = getCell(pos.x - 1, pos.y);
+    String right = getCell(pos.x + 1, pos.y);
+    String up = getCell(pos.x, pos.y - 1);
+    String down = getCell(pos.x, pos.y + 1);
+    return left.equals(right) && up.equals(down) && !left.equals(up);
   }
   
   /** Finds neighbors that are only walls in the surround 9 pixels*/
@@ -396,7 +398,7 @@ class DungeonGenerator{
   boolean isAllWall(Int2D p){
     for(int x = p.x - 1; x < p.x + 1; x++){
       for(int y = p.y - 1; y < p.y + 1; y++){
-        if(getCell(x, y) != WALL) return false;
+        if(!isWall(getCell(x, y))) return false;
       }
     }
     return true;
@@ -419,7 +421,7 @@ class DungeonGenerator{
     r.dim = dim.copy();
     for(int x = pos.x; x < pos.x + dim.x; x++){
       for(int y = pos.y; y < pos.y + dim.y; y++){
-        if(getCell(x, y) == ROOM) return;
+        if(isRoom(getCell(x, y))) return;
         //Add this tile to the room
         r.tiles.add(new Int2D(x, y));
       }
@@ -465,7 +467,7 @@ class DungeonGenerator{
       //Punch through untill we reach FLOOR
       do{
         //Only change type of cell if we're carving through wall
-        if(getCell(pos) == WALL) setCell(pos, FLOOR);
+        if(isWall(getCell(pos))) setCell(pos, FLOOR);
         //Continue in that direction
         pos.add(dir);
         
@@ -476,7 +478,7 @@ class DungeonGenerator{
           //And ignore this attempt
           return;
         }
-      }while(getCell(pos) != FLOOR);
+      }while(!isFloor(getCell(pos)));
     }
   }
 }
