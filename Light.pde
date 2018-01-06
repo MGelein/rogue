@@ -90,16 +90,21 @@ class LightPoint{
     propagated = true;
     //Initialize the list of possible neighbors
     ArrayList<LightPoint> pts = new ArrayList<LightPoint>();
-    //Don't propagate if i'm an unwalkable tile and not source of the light, return empty list
-    if(!l.grid.get(pos.x, pos.y).walkable && l.range != str || str == 1) return pts;
+    //Don't propagate if i'm an opaque tile and not source of the light, return empty list
+    if(l.grid.get(pos.x, pos.y).opaque && l.range != str || str == 1) return pts;
     
-    //Add all possible directions
-    pts.add(new LightPoint(l, new Int2D(pos.x, pos.y - 1), str - 1));
+    //Only allow upward light when we are not opaque
+    if(!l.grid.get(pos.x, pos.y).opaque){
+      pts.add(new LightPoint(l, new Int2D(pos.x, pos.y - 1), str - 1));
+    }
+    
+    
+    //Left right
     pts.add(new LightPoint(l, new Int2D(pos.x - 1, pos.y), str - 1));
     pts.add(new LightPoint(l, new Int2D(pos.x + 1, pos.y), str - 1));
     
-    //Only allow downward light when it is walkable
-    if(l.grid.get(pos.x, pos.y + 1).walkable){
+    //Only allow downward light when it is not opaque
+    if(!l.grid.get(pos.x, pos.y + 1).opaque){
       pts.add(new LightPoint(l, new Int2D(pos.x, pos.y + 1), str - 1));
     }
     

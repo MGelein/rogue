@@ -34,9 +34,9 @@ class Grid extends MouseAble implements IUpdate{
     }
     
     //Now generate decoration for this dungeon
-    String[] decoration = generator.generateDecoration();
-    for(int i = 0; i < decoration.length; i++){
-      get(i).parseDecoration(decoration[i]);
+    ArrayList<GridObject> decoration = generator.generateDecoration(this);
+    for(GridObject o : decoration){
+      get(o.x, o.y).add(o);
     }
     calcLighting();
   }
@@ -166,16 +166,11 @@ class GridCell extends RenderAble{
     o.parentCell = this;
     objects.add(o);
     if(!o.walkable) walkable = false;
-    if(!o.opaque) opaque = false;
+    if(o.opaque) opaque = true;
   }
   
   void remove(GridObject o){
     objects.remove(o);
-  }
-  
-  void parseDecoration(String tile){
-    if(dungeonGenerator.isType("light", tile)) add(new LightSource(x, y, this, tile));
-    else if(dungeonGenerator.isType("door", tile)) add(new Door(x, y, this, tile));
   }
   
   void parseTile(String tile){

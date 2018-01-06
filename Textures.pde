@@ -109,6 +109,18 @@ class Textures{
     return animSheets.get(s.substring(0, s.indexOf(".")).trim().toLowerCase()) //get sheet name
                         .get(registry.getInt2D("tex." + s).copy().add(themeModifier), frame);            //get sheet coords
   }
+  
+  boolean exists(String s){
+    if(s.indexOf(".") == -1) {
+      println("Invalid texture name, no sheet name: " + s);
+      return false;
+    }
+    String sheetName = s.substring(0, s.indexOf(".")).trim().toLowerCase();
+    if(animSheets.containsKey(sheetName)|| spriteSheets.containsKey(sheetName)){
+      if(registry.get("tex." + s) != null) return true; 
+    }
+    return false;
+  }
 }
 
 class AnimatedSheet{

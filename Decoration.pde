@@ -13,6 +13,10 @@ class LightSource extends GridObject{
     lightObject = new Light(new Int2D(x, y), template.c, template.str, parentCell.grid);
     parentCell.grid.addLight(lightObject);
     lit = true;
+    //If it was previously extinguished
+    if(textures.exists(texName.replaceAll("_extinguished", ""))){
+      setTexture(texName.replaceAll("_extinguished", ""));
+    }
   }
   
   void interact(){
@@ -32,6 +36,11 @@ class LightSource extends GridObject{
   void extinguish(){
     parentCell.grid.removeLight(lightObject);
     lit = false;
+    
+    //If extinguished texture exists, set it to it
+    if(textures.exists(texName+"_extinguished")){
+      setTexture(texName + "_extinguished", false);
+    }
   }
   
   void toggle(){
@@ -48,6 +57,8 @@ class Door extends GridObject{
     parse(s);
     if(s.indexOf("locked") != -1) locked = true;
     setTexture(texName, false);
+    walkable = false; 
+    opaque = true;
   }
   
   void interact(){
@@ -57,8 +68,21 @@ class Door extends GridObject{
     
     //Set cell walkable
     parentCell.walkable = open;
+    parentCell.opaque = !open;
     
     //Also update all lighting now the door has opened
     parentCell.grid.lightingUpdate = true;
+  }
+}
+
+class Bones extends GridObject{
+  String[] boneTypes = new String[]{
+  "decor.skull_white", "decor.skull_white_long",
+  "decor.bones_white", "decor.bones_white_long"};
+  
+  Bones(int x, int y, GridCell parent){
+    super(x, y, parent);
+    parse(random(boneTypes));
+    opaque = walkable = false;
   }
 }

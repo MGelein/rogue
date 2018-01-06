@@ -58,7 +58,7 @@ class DungeonGenerator{
   //Object types
   String CHEST_LARGE = "chest.large";
   String LANTERN = "light.lantern";
-  String TORCH = "light.torch";
+  String TORCH = "decor.torch_wood";
   
   
   //Amt of tries to place a room in the grid
@@ -82,7 +82,7 @@ class DungeonGenerator{
   ArrayList<DungeonRoom> rooms = new ArrayList<DungeonRoom>();
   
   //String grid, every String is one of the objcts
-  String[] decoration;
+  ArrayList<GridObject> decoration;
   
   /** Returns a cell from the grid, prevents out of bounds exceptions*/
   String getCell(int x, int y){
@@ -236,26 +236,38 @@ class DungeonGenerator{
     return grid;
   }
   
-  String[] generateDecoration(){
+  ArrayList<GridObject> generateDecoration(Grid gameGrid){
     //STEP 0: Setup for creation
-    decoration = new String[cols * rows];
-    for(int i = 0; i < decoration.length; i++) decoration[i] = VOID;
+    decoration = new ArrayList<GridObject>();
     
-    //STEP 1: Generate chests
     for(int i = 0; i < grid.length; i++){
-      if(isFloor(grid[i])){
-        if(oneIn(50)){
-          decoration[i] = LANTERN;
+      GridCell holder = gameGrid.get(i);
+      int x = i % cols;
+      int y  = floor(i / cols);
+      Int2D pos = new Int2D(x, y);
+      
+      //First try to spawn some doorways
+      if(isFloor(grid[i]) && isDoorway(pos)){
+        if(random(1) < 0.5f){
+          String texName = DOOR_V;
+          if(!isWall(grid[i - cols])) texName = DOOR_H;
+          decoration.add(new Door(x, y, holder, texName));
+        }
+        
+        
+      //Chance to spawn some floor decoration
+      }else if(isFloor(grid[i])){
+        //One in 200 chance to spawn bones
+        if(oneIn(200)){
+          decoration.add(new Bones(x, y, holder));
         }
       }
-    }
-    
-    //STEP 2: Generate doors
-    for(int i = 0; i < grid.length; i++){
-      if(isFloor(grid[i]) && isDoorway(new Int2D(i % cols, floor(i / cols)))){
-        if(random(1) < 0.5f){
-          if(isWall(grid[i - cols])) decoration[i] = DOOR_V;
-          else decoration[i] = DOOR_H;
+      
+      
+      else if(isWall(grid[i]) && isTorchWall(pos)){
+        //One in 50 chance to spawn a lightsource
+        if(oneIn(10)){
+          decoration.add(new LightSource(x, y, holder, TORCH));
         }
       }
     }
@@ -336,6 +348,13 @@ class DungeonGenerator{
     else return LIQ_BM;
   }
   
+  boolean isTorchWall(Int2D pos){
+    boolean left = isWall(getCell(pos.x - 1, pos.y));
+    boolean right = isWall(getCell(pos.x + 1, pos.y));
+    boolean bottom = isFloor(getCell(pos.x, pos.y + 1));
+    return (left || right) && bottom;
+  }
+  
   boolean isDoorway(Int2D pos){
     String left = getCell(pos.x - 1, pos.y);
     String right = getCell(pos.x + 1, pos.y);
@@ -357,7 +376,7 @@ class DungeonGenerator{
   }
   
   boolean isOpaque(String s){
-    return isFloor(s) || isLiquid(s);
+    return (!isWalkAble(s)) || isLiquid(s);
   }
   
   boolean isType(String type, String s){
