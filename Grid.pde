@@ -26,6 +26,7 @@ class Grid extends MouseAble implements IUpdate{
   }
   
   void load(DungeonGenerator generator){
+    lights = new ArrayList<Light>();
     String[] dungeon = generator.generate(cols, rows);
     for(int i = 0; i < dungeon.length; i++){
       get(i).empty();
@@ -45,15 +46,16 @@ class Grid extends MouseAble implements IUpdate{
     for(GridCell c : cells) c.lighting = ambientLight;
     
     //Recalculate all lighting
-    for(Light l : lights) l.calculate();
+    for(Light l : lights) {l.refresh(); l.calculate();};
     
     //Once the lighting has been calculated, reset trigger
     lightingUpdate = false;
   }
   
   void mouseDown(int x, int y){
-    println(floor(x / GRID_SIZE), floor(y / GRID_SIZE));
-    println(viewPoint);
+    Int2D clickPos = new Int2D(floor(x / GRID_SIZE), floor(y / GRID_SIZE));
+    clickPos.add(viewPoint);
+    get(clickPos).click();
   }
   
   void addLight(Light l){
@@ -104,6 +106,9 @@ class Grid extends MouseAble implements IUpdate{
   GridCell get(int index){
      return cells[constrain(index, 0, cells.length - 1)];
   }
+  GridCell get(Int2D pos){
+    return get(pos.x, pos.y);
+  }
 }
 
 class GridCell extends RenderAble{
@@ -131,6 +136,8 @@ class GridCell extends RenderAble{
   /** Called to empty this gridCell, completely removes all*/
   void empty(){
     objects = new ArrayList<GridObject>();
+    walkable = true;
+    opaque = false;
   }
   
   void update(){
@@ -139,6 +146,10 @@ class GridCell extends RenderAble{
   
   void animate(){
     for(GridObject o : objects) {if(o.animated) o.animate();}
+  }
+  
+  void click(){
+    for(GridObject o : objects) o.interact();
   }
   
   void render(PGraphics g){
@@ -163,7 +174,8 @@ class GridCell extends RenderAble{
   }
   
   void parseDecoration(String tile){
-    if(dungeonGenerator.isType("light", tile)) add(new LightSource(x, y, this, tile)); 
+    if(dungeonGenerator.isType("light", tile)) add(new LightSource(x, y, this, tile));
+    else if(dungeonGenerator.isType("door", tile)) add(new Door(x, y, this, tile));
   }
   
   void parseTile(String tile){
@@ -191,6 +203,8 @@ class GridObject extends RenderAble{
     this.y = y;
     parentCell = cell;
   }
+  
+  void interact(){};
   
   void setTexture(String s){
     tex = textures.get(s);

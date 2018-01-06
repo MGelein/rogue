@@ -1,15 +1,11 @@
 /** Gridobject that holds a light source. Parent for all lightsource objects*/
 class LightSource extends GridObject{
-  private HashMap<String, LightTemplate> templates = new HashMap<String, LightTemplate>();
-  {
-    templates.put("light.lantern", new LightTemplate(color(25, 255, 180), 6));
-  }
   Light lightObject;
   boolean lit = false;
   LightSource(int x, int y, GridCell parent, String s){
     super(x, y, parent);
     parse(s);
-    light(templates.get(s));
+    light(lights.get(s));
   }
   
   void light(LightTemplate template){
@@ -17,6 +13,10 @@ class LightSource extends GridObject{
     lightObject = new Light(new Int2D(x, y), template.c, template.str, parentCell.grid);
     parentCell.grid.addLight(lightObject);
     lit = true;
+  }
+  
+  void interact(){
+    toggle();
   }
   
   void light(){
@@ -39,12 +39,26 @@ class LightSource extends GridObject{
     else light();
   }
 }
-/** Used to define lightcolor and lightrange template*/
-class LightTemplate{
-  color c;
-  int str;
-  LightTemplate(color col, int strength){
-    c = col;
-    str = strength;
+
+class Door extends GridObject{
+  boolean open = false;
+  boolean locked = false;
+  Door(int x, int y, GridCell parent, String s){
+    super(x, y, parent);
+    parse(s);
+    if(s.indexOf("locked") != -1) locked = true;
+    setTexture(texName, false);
+  }
+  
+  void interact(){
+    if(locked) return;
+    open = !open;
+    animate();
+    
+    //Set cell walkable
+    parentCell.walkable = open;
+    
+    //Also update all lighting now the door has opened
+    parentCell.grid.lightingUpdate = true;
   }
 }

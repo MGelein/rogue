@@ -17,6 +17,8 @@ MouseDistributor mouseDistributor = new MouseDistributor();
 Registry registry = new Registry();
 GameState currentState;
 Textures textures;
+Lights lights;
+
 DungeonGenerator dungeonGenerator = new DungeonGenerator();
 
 PGraphics stage;
@@ -45,6 +47,7 @@ void setup(){
   
   //Load the ini files for the textures (spritesheet indexing)
   registry.load("textures.ini", "tex");
+  registry.load("lights.ini", "light");
   
   //Create the canvas to draw on
   stage = createGraphics(floor(1280 / SCL), floor(720 / SCL));
@@ -54,6 +57,8 @@ void setup(){
   
   //Load all texture objects
   textures = new Textures();
+  //Load all light templates
+  lights = new Lights();
   
   //Load a font to use for all drawing of text (to set it we must be drawing)
   stage.beginDraw();

@@ -6,6 +6,10 @@ class DungeonGenerator{
   String VOID = "void";
   String LIQUID = "pit";
   
+  //Door types
+  String DOOR_H = "door.iron_h";
+  String DOOR_V = "door.iron_v";
+  
   //Wall types
   String WALL_FLAT = "wall.brick_flat";
   String WALL_T_TOP = "wall.brick_tjunction_top";
@@ -219,11 +223,11 @@ class DungeonGenerator{
     
     //STEP 9: Wall & floor & liquid conversion
     for(int i = 0; i < grid.length; i++){
-      if(grid[i] == WALL){
+      if(isWall(grid[i])){
         grid[i] = convertWall(new Int2D(i % cols, floor(i / cols)));
-      }else if(grid[i] == FLOOR){
+      }else if(isFloor(grid[i])){
         grid[i] = convertFloor(new Int2D(i % cols, floor(i / cols)));
-      }else if(grid[i] == LIQUID){
+      }else if(isLiquid(grid[i])){
         grid[i] = convertLiquid(new Int2D(i % cols, floor(i / cols)));
       }
     }
@@ -242,6 +246,16 @@ class DungeonGenerator{
       if(isFloor(grid[i])){
         if(oneIn(50)){
           decoration[i] = LANTERN;
+        }
+      }
+    }
+    
+    //STEP 2: Generate doors
+    for(int i = 0; i < grid.length; i++){
+      if(isFloor(grid[i]) && isDoorway(new Int2D(i % cols, floor(i / cols)))){
+        if(random(1) < 0.5f){
+          if(isWall(grid[i - cols])) decoration[i] = DOOR_V;
+          else decoration[i] = DOOR_H;
         }
       }
     }
@@ -322,6 +336,22 @@ class DungeonGenerator{
     else return LIQ_BM;
   }
   
+  boolean isDoorway(Int2D pos){
+    String left = getCell(pos.x - 1, pos.y);
+    String right = getCell(pos.x + 1, pos.y);
+    if(!getType(left).equals(getType(right))){ return false;}
+    String up = getCell(pos.x, pos.y - 1);
+    String down = getCell(pos.x, pos.y + 1);
+    if(!getType(up).equals(getType(down))){ return false;}
+    if(getType(left).equals(getType(up))){ return false;}
+    int wallCount = 2;//At least two should be walls by now
+    if(isWall(getCell(pos.x - 1, pos.y - 1))) wallCount ++;
+    if(isWall(getCell(pos.x + 1, pos.y - 1))) wallCount ++;
+    if(isWall(getCell(pos.x + 1, pos.y + 1))) wallCount ++;
+    if(isWall(getCell(pos.x - 1, pos.y + 1))) wallCount ++;
+    return (wallCount >= 2 && wallCount <= 3);
+  }
+  
   boolean isWalkAble(String s){
     return isFloor(s) || s.equals(VOID);
   }
@@ -332,6 +362,10 @@ class DungeonGenerator{
   
   boolean isType(String type, String s){
     return  s.substring(0, constrain(type.length(), 0, s.length())).equals(type);
+  }
+  
+  String getType(String s){
+    return s.substring(0, s.indexOf("."));
   }
   
   boolean isWall(String s){

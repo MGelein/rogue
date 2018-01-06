@@ -64,6 +64,10 @@ class Light{
       grid.get(l.pos.x, l.pos.y).lighting = origColor;
     }
   }
+  
+  void refresh(){
+    calculatePoints();
+  }
 }
 
 class LightPoint{
@@ -102,5 +106,38 @@ class LightPoint{
     
     //Return the populated list
     return pts;
+  }
+}
+
+/** Used to define lightcolor and lightrange template*/
+class LightTemplate{
+  color c;
+  int str;
+  LightTemplate(color col, int strength){
+    c = col;
+    str = strength;
+  }
+  
+  /**Build from ini file definition*/
+  LightTemplate(String s){
+    if(s != null && s.length() > 1){
+      String[] parts = s.split(":");
+      String[] colorStrings = parts[0].split(",");
+      int[] colorNumbers = new int[3];
+      for(int i = 0; i < colorStrings.length; i++){
+        colorNumbers[i] = parseInt(colorStrings[i].trim());
+      }
+      c = color(colorNumbers[0], colorNumbers[1], colorNumbers[2]);
+      str = parseInt(parts[1]);
+    }else{
+      c = color(0, 255, 100);
+      str = 6;
+    }
+  }
+}
+
+class Lights{
+  LightTemplate get(String s){
+    return new LightTemplate(registry.get("light." + s));
   }
 }
