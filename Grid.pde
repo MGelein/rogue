@@ -232,6 +232,9 @@ class GridObject extends RenderAble{
     //According to tileType set walkability to false if not already false
     walkable = dungeonGenerator.isWalkAble(dungeonTile);
     opaque = dungeonGenerator.isOpaque(dungeonTile);
+    if(dungeonGenerator.isFloor(dungeonTile) || dungeonGenerator.isWall(dungeonTile)){
+      textures.setThemeModifier(textures.theme.temple);
+    }
     
     //If it is not a void tile, set the texture
     if(!dungeonGenerator.isType(dungeonGenerator.VOID, dungeonTile)){
