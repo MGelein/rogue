@@ -9,6 +9,7 @@ class Grid extends RenderAble implements IUpdate{
   private int ambientLight = color(0, 0, 60);
   Int2D viewPoint = new Int2D();
   boolean renderLines = false;
+  boolean lightingUpdate = false;
   
   Grid(int maxCols, int maxRows){
     rows = maxRows;
@@ -27,20 +28,15 @@ class Grid extends RenderAble implements IUpdate{
   void load(DungeonGenerator generator){
     String[] dungeon = generator.generate(cols, rows);
     for(int i = 0; i < dungeon.length; i++){
-      int x = i % cols;
-      int y = floor(i / cols);
       get(i).empty();
-      get(i).add(new GridObject(x, y, get(i)).parse(dungeon[i]));
+      get(i).parseTile(dungeon[i]);
     }
     
     //Now generate decoration for this dungeon
     String[] decoration = generator.generateDecoration();
     for(int i = 0; i < decoration.length; i++){
-      int x = i % cols;
-      int y = floor(i / cols);
-      get(i).add(new GridObject(x, y, get(i)).parse(decoration[i]));
+      get(i).parseDecoration(decoration[i]);
     }
-    
     calcLighting();
   }
   
@@ -50,14 +46,19 @@ class Grid extends RenderAble implements IUpdate{
     
     //Recalculate all lighting
     for(Light l : lights) l.calculate();
+    
+    //Once the lighting has been calculated, reset trigger
+    lightingUpdate = false;
   }
   
   void addLight(Light l){
     lights.add(l);
+    lightingUpdate = true;
   }
   
   void removeLight(Light l){
     lights.remove(l);
+    lightingUpdate = true;
   }
   
   void update(){
@@ -69,6 +70,9 @@ class Grid extends RenderAble implements IUpdate{
       animCounter -= animRate;
       for(GridCell c: cells) c.animate();
     }
+    
+    //Also check if lighting needs updating
+    if(lightingUpdate) calcLighting();
   }
   
   void render(PGraphics g){
@@ -152,6 +156,16 @@ class GridCell extends RenderAble{
   void remove(GridObject o){
     objects.remove(o);
   }
+  
+  void parseDecoration(String tile){
+    if(dungeonGenerator.isType("light", tile)) add(new LightSource(x, y, this, tile)); 
+  }
+  
+  void parseTile(String tile){
+    GridObject o = new GridObject(x, y, this);
+    o.parse(tile);
+    add(o);
+  }
 }
 
 /** Every single object on one tile is a gridObject*/
@@ -174,9 +188,6 @@ class GridObject extends RenderAble{
   }
   
   void setTexture(String s){
-    if(s == "light.lantern"){
-      parentCell.grid.addLight(new Light(new Int2D(x, y), color(25, 255, 200), 6, parentCell.grid));
-    }
     tex = textures.get(s);
     texMod = textures.currentTheme;
     animated = textures.isAnimated(s);
