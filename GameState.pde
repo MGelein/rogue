@@ -72,16 +72,17 @@ class Game extends GameState{
     
     addRender(grid, b);
     addUpdate(grid);
+    addMouse(grid);
   }
   
   void update(){
     super.update();
     
     if(keys.isDownOnce(ENTER)) grid.load(dungeonGenerator);
-    if(keys.isDownOnce(UP)) grid.viewPoint.y ++;
-    if(keys.isDownOnce(DOWN)) grid.viewPoint.y --;
-    if(keys.isDownOnce(LEFT)) grid.viewPoint.x ++;
-    if(keys.isDownOnce(RIGHT)) grid.viewPoint.x --;
+    if(keys.isDownOnce(UP)) grid.viewPoint.y --;
+    if(keys.isDownOnce(DOWN)) grid.viewPoint.y ++;
+    if(keys.isDownOnce(LEFT)) grid.viewPoint.x --;
+    if(keys.isDownOnce(RIGHT)) grid.viewPoint.x ++;
   }
 }
 /**

@@ -87,7 +87,7 @@ void draw(){
   if(DRAW_FPS){
     fill(0);
     text(floor(FRAME_RATE) + " fps", 2, 16);
-    fill(255, 255, 0);
+    fill(40, 255, 255);
     text(floor(FRAME_RATE) + " fps", 3, 17);
     FRAME_RATE -= (FRAME_RATE - frameRate) * 0.1f;
   }

@@ -1,4 +1,4 @@
-class Grid extends RenderAble implements IUpdate{
+class Grid extends MouseAble implements IUpdate{
   
   private ArrayList<Light> lights = new ArrayList<Light>();
   private GridCell[] cells;
@@ -51,6 +51,11 @@ class Grid extends RenderAble implements IUpdate{
     lightingUpdate = false;
   }
   
+  void mouseDown(int x, int y){
+    println(floor(x / GRID_SIZE), floor(y / GRID_SIZE));
+    println(viewPoint);
+  }
+  
   void addLight(Light l){
     lights.add(l);
     lightingUpdate = true;
@@ -78,7 +83,7 @@ class Grid extends RenderAble implements IUpdate{
   void render(PGraphics g){
     //Translate matrix for map viewing.
     g.pushMatrix();
-    g.translate(viewPoint.x * GRID_SIZE, viewPoint.y * GRID_SIZE);
+    g.translate(-viewPoint.x * GRID_SIZE, -viewPoint.y * GRID_SIZE);
         
     for(GridCell c : cells) {
       if(c.isVisible(viewPoint)) c.render(g);
@@ -118,8 +123,8 @@ class GridCell extends RenderAble{
   
   /** Check if we should render you*/
   boolean isVisible(Int2D viewPoint){
-    if(x + viewPoint.x > COLS_VISIBLE || y + viewPoint.y > ROWS_VISIBLE) return false;
-    else if(x + viewPoint.x < 0 || y + viewPoint.y < 0) return false;
+    if(x - viewPoint.x > COLS_VISIBLE || y - viewPoint.y > ROWS_VISIBLE) return false;
+    else if(x - viewPoint.x < 0 || y - viewPoint.y < 0) return false;
     return true;
   }
   
@@ -302,5 +307,9 @@ class Int2D{
   
   boolean isOdd(){
     return (x % 2 != 0) && (y % 2 != 0);
+  }
+  
+  String toString(){
+    return "x: " + x + ", y: " + y;
   }
 }
