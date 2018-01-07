@@ -10,7 +10,7 @@ class Grid extends MouseAble implements IUpdate{
   Int2D viewPoint = new Int2D();
   boolean renderLines = false;
   boolean lightingUpdate = false;
-  Player player;
+  Actor focusActor;
   
   Grid(int maxCols, int maxRows){
     rows = maxRows;
@@ -28,7 +28,7 @@ class Grid extends MouseAble implements IUpdate{
   
   void load(DungeonGenerator generator){
     lights = new ArrayList<Light>();
-    String[] dungeon = generator.generate(cols, rows);
+    String[] dungeon = generator.generateDungeon(cols, rows);
     for(int i = 0; i < dungeon.length; i++){
       get(i).empty();
       get(i).parseTile(dungeon[i]);
@@ -57,7 +57,7 @@ class Grid extends MouseAble implements IUpdate{
     Int2D clickPos = new Int2D(floor(x / GRID_SIZE), floor(y / GRID_SIZE));
     clickPos.sub(floor(COLS_VISIBLE / 2), floor(ROWS_VISIBLE / 2));
     clickPos.add(viewPoint);
-    get(clickPos).click();
+    get(clickPos).interact();
     get(clickPos).listObjects();
   }
   
@@ -211,7 +211,7 @@ class GridCell extends RenderAble{
     for(GridObject o : objects) {if(o.animated) o.animate();}
   }
   
-  void click(){
+  void interact(){
     for(GridObject o : objects) o.interact();
   }
   
@@ -298,7 +298,7 @@ class GridObject extends RenderAble{
     walkable = dungeonGenerator.isWalkAble(dungeonTile);
     opaque = dungeonGenerator.isOpaque(dungeonTile);
     if(dungeonGenerator.isFloor(dungeonTile) || dungeonGenerator.isWall(dungeonTile)){
-      textures.setThemeModifier(textures.theme.brick_darker);
+      textures.setThemeModifier(textures.theme.temple);
     }
     
     if(dungeonGenerator.isLiquid(dungeonTile)){

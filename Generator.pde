@@ -5,6 +5,7 @@ class DungeonGenerator{
   String ROOM = "room";
   String VOID = "void";
   String LIQUID = "pit";
+  String CONN = "conn";
   
   //Door types
   String DOOR_H = "door.iron_h";
@@ -80,6 +81,12 @@ class DungeonGenerator{
   int rows;
   //List of all rooms in this dungeon
   ArrayList<DungeonRoom> rooms = new ArrayList<DungeonRoom>();
+  //Amt of cycles of Cellular automata
+  int cycles = 6;
+  //Limits at which cells die and come to live
+  int deathLimit = 3;
+  int birthLimit = 3;
+  float startAliveChance = 0.2f;
   
   //String grid, every String is one of the objcts
   ArrayList<GridObject> decoration;
@@ -99,8 +106,158 @@ class DungeonGenerator{
   /** Sets the cell at the specified coordinate to the specified value*/
   void setCell(Int2D pos, String value){ setCell(pos.x, pos.y, value);}
   
+  String[] generateCave(int c, int r){
+    //STEP 0: Set everythings as random(wall/floor)
+    cols = c;
+    rows = r;
+    grid = new String[cols * rows];
+    for(int i = 0; i < grid.length; i++){
+      grid[i] = (random(1f) < startAliveChance) ? FLOOR : WALL;
+    }
+    
+    //STEP 1: Set sides to WALL
+    for(int x = 0; x < cols; x++){
+      setCell(x, 0, WALL);
+      setCell(x, rows - 1, WALL);
+    }
+    for(int y = 0; y < rows; y++){
+      setCell(0, y, WALL);
+      setCell(cols - 1, y, WALL);
+    }
+    
+    //STEP 2: Do the algorithm a few times
+    for(int i = 0; i < cycles; i++) calculateCellularAutomata();
+    
+    //STEP 3: Keep only floodfill connected cells
+    keepConnected(0);
+    
+    //STEP 7: Mark all pure wall cells for void creation and create void from them
+    Int2D pos = new Int2D();
+    ArrayList<Integer> voids = new ArrayList<Integer>();
+    for(int i = 0; i < grid.length; i++){
+      pos.x = i % cols;
+      pos.y = floor(i / cols);
+      //Only check wall cells
+      if(isWall(getCell(pos))){
+        boolean left = isWall(getCell(pos.x - 1, pos.y));
+        boolean tl = isWall(getCell(pos.x - 1, pos.y - 1));
+        boolean right = isWall(getCell(pos.x + 1, pos.y));
+        boolean tr = isWall(getCell(pos.x + 1, pos.y - 1));
+        boolean up = isWall(getCell(pos.x, pos.y - 1));
+        boolean bl = isWall(getCell(pos.x - 1, pos.y + 1));
+        boolean down = isWall(getCell(pos.x, pos.y + 1));
+        boolean br = isWall(getCell(pos.x + 1, pos.y + 1));
+        if(tl && left && tr && up && down && bl && br && right){
+          voids.add(i);
+        }
+      }
+    }
+    for(int index: voids) grid[index] = VOID;
+    
+    //STEP 9: Wall & floor & liquid conversion
+    for(int i = 0; i < grid.length; i++){
+      if(isWall(grid[i])){
+        grid[i] = convertWall(new Int2D(i % cols, floor(i / cols)));
+      }else if(isFloor(grid[i])){
+        grid[i] = convertFloor(new Int2D(i % cols, floor(i / cols)));
+      }else if(isLiquid(grid[i])){
+        grid[i] = convertLiquid(new Int2D(i % cols, floor(i / cols)));
+      }
+    }
+    
+    //STEP FINAL: return the grid
+    return grid;
+  }
+  
+  /** Applies the CA rules*/
+  void calculateCellularAutomata(){
+    //Create the empty buffer to work to
+    String[] temp = new String[cols * rows];
+    
+    //For each cell calculate the rules
+    for(int x = 0; x < cols; x++){
+      for(int y = 0; y < rows; y++){
+        int floorCount = 0;
+        if(isFloor(getCell(x - 1, y - 1))) floorCount ++;
+        if(isFloor(getCell(x, y - 1))) floorCount ++;
+        if(isFloor(getCell(x + 1, y - 1))) floorCount ++;
+        if(isFloor(getCell(x - 1, y))) floorCount ++;
+        if(isFloor(getCell(x + 1, y))) floorCount ++;
+        if(isFloor(getCell(x - 1, y + 1))) floorCount ++;
+        if(isFloor(getCell(x, y + 1))) floorCount ++;
+        if(isFloor(getCell(x + 1, y + 1))) floorCount ++;
+        if(isFloor(getCell(x, y))){
+          temp[x + y * cols] = (floorCount > birthLimit) ? FLOOR : WALL;
+        }else{
+          temp[x + y * cols] = (floorCount < deathLimit) ? WALL : FLOOR;
+        }
+      }
+    }
+    
+    //Now assign the temporary buffer to the grid
+    grid = temp;
+  }
+  
+  /**Only keep cells that are connected to each other*/
+  void keepConnected(int tryCount){
+    String[] connected = new String[cols * rows];
+    int amtFloor = 0;
+    //Copy the grid and coutn the amt of floors
+    for(int i = 0; i < grid.length; i++) {
+      connected[i] = grid[i];
+      if(isFloor(grid[i])) amtFloor++;
+    }
+    
+    //Then get a random startCell that is not a wall
+    int startCell = floor(random(grid.length));
+    while(isWall(grid[startCell])) startCell = floor(random(grid.length));
+    
+    //Now do a floodfill
+    int count = 0;
+    ArrayList<Integer> open = new ArrayList<Integer>();
+    //Keep flooding as long as there are pixels left
+    while(open.size() > 0){
+      //Get the cell index
+      int index = open.get(0);
+      int x = index % cols;
+      int y = floor(index / cols);
+      if(isFloor(getCell(x - 1, y))){
+        connected[index] = CONN;
+        open.add(index);
+      }
+      if(isFloor(getCell(x + 1, y))){
+        connected[index] = CONN;
+        open.add(index);
+      }
+      if(isFloor(getCell(x, y - 1))){
+        connected[index] = CONN;
+        open.add(index);
+      }
+      if(isFloor(getCell(x, y + 1))){
+        connected[index] = CONN;
+        open.add(index);
+      }
+      count ++;
+      open.remove(0);
+    }
+    
+    //Now check if the new area hasn't lost more than two thirds size
+    if(count < amtFloor / 3){
+      if(tryCount > 100){//If we tried a 100 different points, please generate something new
+        return;
+      }
+      keepConnected(tryCount + 1);
+      return;
+    }
+    
+    //If we make it to here, rewrite the main grid
+    for(int i = 0; i < grid.length; i++){
+      grid[i] = (isType(CONN, connected[i])) ? FLOOR : WALL;
+    }
+  }
+  
   /** Generates a new dungeon with the specified size*/
-  String[] generate(int c, int r){
+  String[] generateDungeon(int c, int r){
     //STEP 0: Set everythings as solid walls and create the lists
     cols = c;
     rows = r;
@@ -387,7 +544,7 @@ class DungeonGenerator{
   }
   
   boolean isOpaque(String s){
-    return (!isWalkAble(s)) || isLiquid(s);
+    return isWall(s);
   }
   
   boolean isType(String type, String s){
@@ -395,6 +552,7 @@ class DungeonGenerator{
   }
   
   String getType(String s){
+    if(s.indexOf(".") == -1) return s;
     return s.substring(0, s.indexOf("."));
   }
   

@@ -10,7 +10,11 @@ class Actor extends GridObject{
   /** Every actor can move to locations*/
   void moveTo(int x, int y){
     //First check if it is possible to moveTo
-    if(!parentCell.grid.get(x, y).walkable) return;
+    if(!parentCell.grid.get(x, y).walkable) {
+      //If not walkable, try to interact with it
+      parentCell.grid.get(x, y).interact();
+      return;
+    }
     
     //Remove from previous parent
     parentCell.remove(this);
@@ -31,7 +35,7 @@ class Player extends Actor{
     super(x, y, parent);
     parse("player.ranger");
     moveTo(x, y);
-    parent.grid.player = this;
+    parent.grid.focusActor = this;
   }
   
   void moveTo(int newX, int newY){
