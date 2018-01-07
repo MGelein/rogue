@@ -1,7 +1,12 @@
 package trb1914.rogue;
 
+import java.io.File;
+
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PGraphics;
+import processing.core.PImage;
+import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.grid.Grid;
 import trb1914.rogue.input.Key;
 import trb1914.rogue.input.MouseDistributor;
@@ -26,6 +31,9 @@ public final class Rogue extends PApplet{
 	 * Called before setup to do some intializing stuff
 	 */
 	public void settings() {
+		//Set ref to self
+		Rogue.app = this;
+		
 		//First load the game ini file
 		Registry.load("game.ini", "game");
 		
@@ -42,9 +50,6 @@ public final class Rogue extends PApplet{
 		
 		//Turn off AA for that pixelated look
 		noSmooth();
-
-		//Set the colorMode to HSB
-		colorMode(HSB);
 	}
 	
 	/**
@@ -61,9 +66,14 @@ public final class Rogue extends PApplet{
 		Registry.load("textures.ini", "tex");
 		//Then load all of the lighting templates
 		Registry.load("lights.ini", "light");
+		//Set the colorMode to HSB
+		colorMode(PConstants.HSB);
 		
 		//Create the stage to draw on
 		stage = createGraphics(floor(1280 / SCL), floor(720 / SCL));
+		
+		//Load all the textures
+		Textures.load();
 	}
 
 
