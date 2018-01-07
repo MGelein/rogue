@@ -303,6 +303,9 @@ class GridObject extends RenderAble{
     
     if(dungeonGenerator.isLiquid(dungeonTile)){
       textures.setThemeModifier(textures.theme.lava);
+      //If this is lava, also be sure to add a light source
+      LightTemplate lavaTemplate = lights.get("lava");
+      parentCell.grid.addLight(new Light(new Int2D(x, y), lavaTemplate.c, lavaTemplate.str, parentCell.grid));
     }
     
     //If it is not a void tile, set the texture
