@@ -1,5 +1,5 @@
 class RenderAble{
-  boolean highlighted = false;
+    boolean highlighted = false;
   
   void render(PGraphics g){}
 }
