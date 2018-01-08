@@ -2,7 +2,6 @@ package trb1914.rogue.grid;
 
 import processing.core.PGraphics;
 import processing.core.PImage;
-import trb1914.debug.Debug;
 import trb1914.rogue.gen.DunGen;
 import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.gfx.Theme;
@@ -85,8 +84,6 @@ public class GridObject extends RenderAble{
 	 * @param s
 	 */
 	public void setTexture(String s) {
-		Debug.println("set to: " + s);
-		if(s.equals("room")) return;
 		tex = Textures.get(s);
 		texMod = Textures.theme;
 		animated = Textures.isAnimated(s);

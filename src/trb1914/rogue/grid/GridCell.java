@@ -140,7 +140,7 @@ public class GridCell extends RenderAble{
 		//First do list maintenance
 		listMaintenance();
 		//Then render
-		//g.tint(lighting);
+		g.tint(lighting);
 		for(GridObject o : objects) o.render(g);
 	}
 	

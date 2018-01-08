@@ -1,9 +1,6 @@
 package trb1914.rogue.state;
 
 import processing.core.PConstants;
-import processing.core.PGraphics;
-import trb1914.debug.Debug;
-import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.grid.Grid;
 import trb1914.rogue.input.Key;
 

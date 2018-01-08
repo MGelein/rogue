@@ -2,7 +2,6 @@ package trb1914.rogue.gen;
 
 import java.util.ArrayList;
 
-import trb1914.debug.Debug;
 import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Player;
 import trb1914.rogue.decor.Bones;
@@ -79,7 +78,7 @@ public abstract class DunGen {
 	//Object types for decoration
 	public static final String CHEST_LARGE = "chest.large";
 	public static final String LANTERN = "light.lantern";
-	public static final String TORCH = "decor.torhc_wood";
+	public static final String TORCH = "decor.torch_wood";
 
 	//ALGORITHM VARIABLES	
 	/** Amount of tries to place a room in the grid*/

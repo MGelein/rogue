@@ -2,7 +2,6 @@ package trb1914.rogue.gen;
 
 import java.util.ArrayList;
 
-import trb1914.debug.Debug;
 import trb1914.rogue.Rogue;
 import trb1914.rogue.math.Int2D;
 
@@ -55,6 +54,7 @@ public class Room {
 		
 		//Pick a random direction
 		Int2D dir = new Int2D().rndDir();
+		pos = pos.copy();
 		
 		//Punch through untill we reach FLOOR
 		do {

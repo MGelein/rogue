@@ -34,6 +34,7 @@ public class Int2D {
 	 * Tries to parse the provided definition to create a new instance
 	 * of Int2D
 	 * @param definition the definition to parse
+	 * @throws Exception 
 	 */
 	public Int2D(String definition){
 		if(definition == null || definition.indexOf(',') == -1) {

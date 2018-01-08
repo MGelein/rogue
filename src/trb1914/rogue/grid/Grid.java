@@ -3,7 +3,6 @@ package trb1914.rogue.grid;
 import java.util.ArrayList;
 
 import processing.core.PGraphics;
-import trb1914.debug.Debug;
 import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Actor;
 import trb1914.rogue.gen.DunGen;
@@ -78,17 +77,16 @@ public class Grid extends MouseAble implements IUpdate{
 	 * @param g
 	 */
 	public void render(PGraphics g){
-
-		
 		//Translate matrix for map viewing.
 		g.pushMatrix();
 		g.translate((-viewPoint.x + (COLS_VISIBLE / 2)) * GRID_SIZE,
 				(-viewPoint.y + (ROWS_VISIBLE / 2)) * GRID_SIZE);
 
-		g.tint(255);
 		for(GridCell c : cells) {
 			if(c.isVisible()) c.render(g);
 		}
+		//Reset tint
+		g.tint(255);
 		g.popMatrix();
 	}
 
@@ -120,7 +118,7 @@ public class Grid extends MouseAble implements IUpdate{
 		clickPos.sub(Rogue.floor(COLS_VISIBLE / 2), Rogue.floor(ROWS_VISIBLE / 2));
 		clickPos.add(viewPoint);
 		get(clickPos).interact();
-		get(clickPos).listObjects();
+		//get(clickPos).listObjects();
 	}
 
 	/**
