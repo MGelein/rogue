@@ -15,5 +15,5 @@ public class RenderAble {
 	 * Render this object using the provided PGraphics interface.
 	 * @param g	the provided PGraphics interface
 	 */
-	void render(PGraphics g) {};
+	public void render(PGraphics g) {};
 }

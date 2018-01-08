@@ -1,16 +1,15 @@
 package trb1914.rogue;
 
-import java.io.File;
-
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
-import processing.core.PImage;
 import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.grid.Grid;
 import trb1914.rogue.input.Key;
 import trb1914.rogue.input.MouseDistributor;
 import trb1914.rogue.io.Registry;
+import trb1914.rogue.state.GameState;
+import trb1914.rogue.state.MainMenu;
 
 /**
  * Main class of the application, entry point for the PApplet
@@ -26,6 +25,8 @@ public final class Rogue extends PApplet{
 	public static Rogue app;
 	/** The scaled stage we're doing all the drawing on*/
 	public static PGraphics stage;
+	/** Intermediate, eased framerate value*/
+	private float FRAME_RATE = 60.0f;
 	
 	/**
 	 * Called before setup to do some intializing stuff
@@ -74,6 +75,48 @@ public final class Rogue extends PApplet{
 		
 		//Load all the textures
 		Textures.load();
+		
+		//Load the font to use for the stage
+		stage.beginDraw();
+		stage.textFont(createFont("Dawnlike/GUI/SDS_8x8.ttf", 8));
+		stage.endDraw();
+		
+		//Set the size for the frameRate font
+		textSize(16);
+		
+		//Finally create the first game state
+		GameState.current = new MainMenu();
+	}
+	
+	/**
+	 * Called every time we need to render stuff.
+	 */
+	public void draw() {
+		//First black background
+		background(0);
+		//Then start drawing on the stage
+		stage.beginDraw();
+		stage.background(0);
+		GameState.current.render(stage);
+		stage.endDraw();
+		
+		//update the current game state
+		GameState.current.update();
+		
+		//Update the mouseDistributor
+		MouseDistributor.update(mouseX, mouseY);
+		
+		//Now that the buffer (stage) has been rendered, render it in turn to the main window
+		image(stage, 0, 0, width, height);
+		
+		//Check if we should draw FPS during devlopment
+		if(DRAW_FPS) {
+			fill(0);
+			text(floor(FRAME_RATE) + " fps", 2, 16);
+			fill(40, 255, 255);
+			text(floor(FRAME_RATE) + " fps", 3, 17);
+			FRAME_RATE -= (FRAME_RATE - frameRate) * 0.1f;
+		}
 	}
 
 
