@@ -12,11 +12,10 @@ public class Actor extends GridObject{
 
 	/**
 	 * Creates a new Actor at the specified position
-	 * @param pos
 	 * @param parent
 	 */
-	public Actor(Int2D pos, GridCell parent) {
-		super(pos, parent);
+	public Actor(GridCell parent) {
+		super(parent.pos, parent);
 		opaque = false;
 	}
 

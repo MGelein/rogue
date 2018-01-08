@@ -178,8 +178,8 @@ public final class Rogue extends PApplet{
 	 * @param chance
 	 * @return
 	 */
-	boolean oneIn(float chance) {
-		  return random(1) < (1 / chance);
+	public static boolean oneIn(float chance) {
+		  return Rogue.app.random(1) < (1 / chance);
 	}
 	
 	/**
