@@ -16,7 +16,7 @@ public class Player extends Actor{
 	 */
 	public Player(GridCell parent){
 		super(parent);
-		parse("player.warrior");
+		parse("player.rogue");
 		moveTo(pos);
 		parent.grid.focusActor = this;
 	}

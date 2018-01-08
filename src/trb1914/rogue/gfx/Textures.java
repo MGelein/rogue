@@ -1,6 +1,5 @@
 package trb1914.rogue.gfx;
 
-import java.io.File;
 import java.util.HashMap;
 
 import processing.core.PImage;

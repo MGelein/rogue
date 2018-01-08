@@ -3,6 +3,7 @@ package trb1914.rogue.decor;
 import trb1914.rogue.Rogue;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.grid.GridObject;
+import trb1914.rogue.particles.Disintegrate;
 
 /**
  * Just a pile of bones
@@ -31,7 +32,7 @@ public class Bones extends GridObject{
 		walkable = true;
 		opaque = false;
 		texName = null;
-		tex = null;
 		parent.remove(this);
+		parent.add(new Disintegrate(parent, tex));
 	}
 }

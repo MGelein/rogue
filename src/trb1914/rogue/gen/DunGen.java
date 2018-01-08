@@ -278,7 +278,7 @@ public abstract class DunGen {
 				//Chance to spawn some floor decoration
 			}else if(isFloor(grid[i])){
 				//One in 200 chance to spawn bones
-				if(Rogue.oneIn(200)){
+				if(Rogue.oneIn(20)){
 					decoration.add(new Bones(holder));
 				}
 			}

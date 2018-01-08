@@ -2,7 +2,6 @@ package trb1914.rogue.gfx;
 
 import processing.core.PImage;
 import trb1914.rogue.Rogue;
-import trb1914.rogue.grid.Grid;
 import trb1914.rogue.math.Int2D;
 
 /**

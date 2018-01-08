@@ -137,6 +137,8 @@ public class Grid extends MouseAble implements IUpdate{
 		for(GridObject o : decoration){
 			get(o.pos).add(o);
 		}
+		
+		//Do the lighting update
 		calcLighting();
 	}
 
