@@ -40,7 +40,7 @@ public abstract class Key {
 	 * @param keyCode the keyCode to check
 	 * @return
 	 */
-	boolean isDown(int keyCode) {
+	public static boolean isDown(int keyCode) {
 		return keyCodes.contains(keyCode);
 	}
 	
@@ -50,7 +50,7 @@ public abstract class Key {
 	 * @param keyCode the keyCode to check
 	 * @return
 	 */
-	boolean isDownOnce(int keyCode) {
+	public static boolean isDownOnce(int keyCode) {
 		if(keyCodes.contains(keyCode)) {
 			keyCodes.remove(keyCode);
 			return true;
@@ -63,7 +63,7 @@ public abstract class Key {
 	 * @param keythe keyto check
 	 * @return
 	 */
-	boolean isDown(char key) {
+	public static boolean isDown(char key) {
 		return keyNames.contains(key);
 	}
 	
@@ -73,7 +73,7 @@ public abstract class Key {
 	 * @param key the key to check
 	 * @return
 	 */
-	boolean isDownOnce(char key) {
+	public static boolean isDownOnce(char key) {
 		if(keyNames.contains(key)) {
 			keyNames.remove(key);
 			return true;

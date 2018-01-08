@@ -1,12 +1,11 @@
 package trb1914.rogue.gfx.light;
 
 import trb1914.rogue.io.Registry;
-
 /**
- * Easy way to access LightTemplates
+ * Every light is an instance of this. Also provides static access to LightTemplates
  * @author trb1914
  */
-public abstract class Lights {
+public class Light {
 	/**
 	 * Returns the parsed lightTemplate for the provided lightType
 	 * @param s

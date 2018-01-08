@@ -31,6 +31,7 @@ public class TextButton extends Button{
 		setText(text);
 		//text buttons are nomrally 2 high
 		dim.y = 2;
+		updateDim(Rogue.stage);
 	}
 
 	/***
@@ -40,6 +41,14 @@ public class TextButton extends Button{
 	public void setText(String t) {
 		text = t;
 		recalc = true;
+	}
+	
+	/**
+	 * Returns the current text on the button
+	 * @return
+	 */
+	public String getText() {
+		return text;
 	}
 
 	/**

@@ -9,7 +9,7 @@ import trb1914.rogue.render.MouseAble;
  */
 public abstract class MouseHandler {
 	/** The MouseObject that called this handler*/
-	private MouseAble target;
+	protected MouseAble target;
 	
 	/**
 	 * Sets the target of this mouseHandler

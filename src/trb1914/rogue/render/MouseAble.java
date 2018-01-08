@@ -30,6 +30,7 @@ public class MouseAble extends RenderAble{
 	 * @param y the y-coord of the press
 	 */
 	public void mouseDown(int x, int y) {
+		if(!highlighted) return;
 		for(int i = mouseHandlers.size() - 1; i >= 0; i--) {
 			mouseHandlers.get(i).mouseDown(x, y);
 		}
@@ -41,6 +42,7 @@ public class MouseAble extends RenderAble{
 	 * @param y the y-coord of the release
 	 */
 	public void mouseUp(int x, int y) {
+		if(!highlighted) return;
 		for(int i = mouseHandlers.size() - 1; i >= 0; i--) {
 			mouseHandlers.get(i).mouseUp(x, y);
 		}

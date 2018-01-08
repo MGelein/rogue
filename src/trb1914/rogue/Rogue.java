@@ -1,5 +1,7 @@
 package trb1914.rogue;
 
+import java.util.ArrayList;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
@@ -153,6 +155,34 @@ public final class Rogue extends PApplet{
 	}
 	
 	/**
+	 * Random element from any fixed size array
+	 * @param arr
+	 * @return
+	 */
+	public <E> E random(E[] arr) {
+		return arr[floor(Rogue.app.random(arr.length))];
+	}
+	
+	/**
+	 * Random element from an arraylist
+	 * @param list
+	 * @return
+	 */
+	public <E> E random(ArrayList<E> list) {
+		return (list.get(floor(random(list.size()))));
+	}
+	
+	/**
+	 * Checks wheterh one in (number) was met. For example,
+	 * one in 50 has a 2 percent chance of succeeding
+	 * @param chance
+	 * @return
+	 */
+	boolean oneIn(float chance) {
+		  return random(1) < (1 / chance);
+	}
+	
+	/**
 	 * Main entry point of the application. Currently I don't allow
 	 * forwarding of arguments to the processing application. 
 	 * @param args the command line parameters
@@ -160,4 +190,5 @@ public final class Rogue extends PApplet{
 	public static void main(String[] args) {
 		PApplet.main(Rogue.class.getName());
 	}
+	
 }

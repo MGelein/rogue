@@ -1,10 +1,12 @@
 package trb1914.rogue.state;
 
 import processing.core.PGraphics;
+import trb1914.rogue.Rogue;
 import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.input.MouseHandler;
 import trb1914.rogue.ui.BigTextButton;
 import trb1914.rogue.ui.ButtonType;
+import trb1914.rogue.ui.FancyButton;
 
 /**
  * Holds the main menu and its functionality
@@ -17,16 +19,33 @@ public class MainMenu extends GameState{
 	 */
 	public MainMenu() {
 		//New game button
-		BigTextButton newGameButton = new BigTextButton(0, 112, ButtonType.GREEN, "New Game");
-		newGameButton.addMouseHandler(new MouseHandler(){
-			public void mouseDown(int x, int y){
-				//GameState..change(new Game());
-			}
-		});
-		newGameButton.centerX();
-		
-		addRender(newGameButton);
-		addMouse(newGameButton);
+	    BigTextButton newGameButton = new BigTextButton(0, 112, ButtonType.GREEN, "New Game");
+	    newGameButton.addMouseHandler(new MouseHandler(){
+	      public void mouseDown(int x, int y){
+	        GameState.current.change(new Game());
+	      }
+	    });
+	    newGameButton.centerX();
+	    
+	    //Close button
+	    BigTextButton closeButton = new BigTextButton(0, 176, ButtonType.RED, "Exit");
+	    closeButton.addMouseHandler(new MouseHandler(){
+	      public void mouseDown(int x, int y){
+	        Rogue.app.exit();
+	      }
+	    });
+	    closeButton.centerX();
+	    
+	    int bottomY = Rogue.stage.height - 40;
+	    final FancyButton musicButton = new FancyButton(8, bottomY, ButtonType.YELLOW, "Music: ON", Textures.get("music.trumpet"));
+	    musicButton.addMouseHandler(new MouseHandler(){
+	      public void mouseDown(int x, int y){
+	        musicButton.setText((musicButton.getText() == "Music: ON") ? "Music: OFF" : "Music: ON");
+	      }
+	    });
+
+	    addRender(newGameButton, closeButton, musicButton);
+	    addMouse(newGameButton, closeButton, musicButton);
 	}
 
 	/**
