@@ -6,6 +6,7 @@ import processing.core.PGraphics;
 import trb1914.debug.Debug;
 import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Actor;
+import trb1914.rogue.gen.DunGen;
 import trb1914.rogue.gfx.light.Light;
 import trb1914.rogue.interfaces.IUpdate;
 import trb1914.rogue.math.Int2D;
@@ -47,7 +48,7 @@ public class Grid extends MouseAble implements IUpdate{
 	/** The location the camera focusses on */
 	public Int2D viewPoint = new Int2D();
 	/** If we need a lighting update to happen ASAP*/
-	protected boolean lightingUpdate = false;
+	public boolean lightingUpdate = false;
 	/** This actor is followed by the camera*/
 	public Actor focusActor;
 
@@ -77,11 +78,14 @@ public class Grid extends MouseAble implements IUpdate{
 	 * @param g
 	 */
 	public void render(PGraphics g){
+
+		
 		//Translate matrix for map viewing.
 		g.pushMatrix();
-		g.translate((-viewPoint.x + COLS_VISIBLE / 2) * GRID_SIZE,
-				(-viewPoint.y + ROWS_VISIBLE / 2) * GRID_SIZE);
+		g.translate((-viewPoint.x + (COLS_VISIBLE / 2)) * GRID_SIZE,
+				(-viewPoint.y + (ROWS_VISIBLE / 2)) * GRID_SIZE);
 
+		g.tint(255);
 		for(GridCell c : cells) {
 			if(c.isVisible()) c.render(g);
 		}
@@ -124,18 +128,18 @@ public class Grid extends MouseAble implements IUpdate{
 	 */
 	public void load(){
 		lights = new ArrayList<Light>();
-		//String[] dungeon; = generator.generateDungeon(cols, rows);
-		/*for(int i = 0; i < dungeon.length; i++){
+		String[] dungeon = DunGen.generateDungeon(cols, rows);
+		for(int i = 0; i < dungeon.length; i++){
 			get(i).empty();
 			get(i).parseTile(dungeon[i]);
 		}
 
 		//Now generate decoration for this dungeon
-		ArrayList<GridObject> decoration;// = generator.generateDecoration(this);
+		ArrayList<GridObject> decoration = DunGen.generateDecoration(this);
 		for(GridObject o : decoration){
 			get(o.pos).add(o);
 		}
-		calcLighting();*/
+		calcLighting();
 	}
 
 	/**
@@ -146,7 +150,7 @@ public class Grid extends MouseAble implements IUpdate{
 		for(GridCell c : cells) c.lighting = ambientLight;
 
 		//Recalculate all lighting
-		//for(Light l : lights) {l.refresh(); l.calculate();};
+		for(Light l : lights) {l.refresh(); l.calculate();};
 
 		//Once the lighting has been calculated, reset trigger
 		lightingUpdate = false;
@@ -189,10 +193,6 @@ public class Grid extends MouseAble implements IUpdate{
 	 * @return
 	 */
 	public GridCell get(int x, int y) {
-		if(x < 0 || x >= cols || y < 0 || y >= rows) {
-			Debug.println("GridCell out of bounds: " + x + ", " + y);
-			return null;
-		}
 		return get(x + y * cols);
 	}
 

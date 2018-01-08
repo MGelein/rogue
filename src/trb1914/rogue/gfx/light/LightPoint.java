@@ -2,6 +2,7 @@ package trb1914.rogue.gfx.light;
 
 import java.util.ArrayList;
 
+import trb1914.debug.Debug;
 import trb1914.rogue.math.Int2D;
 
 /**

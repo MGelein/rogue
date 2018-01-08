@@ -10,8 +10,8 @@ import trb1914.rogue.grid.Grid;
 import trb1914.rogue.input.Key;
 import trb1914.rogue.input.MouseDistributor;
 import trb1914.rogue.io.Registry;
+import trb1914.rogue.state.Game;
 import trb1914.rogue.state.GameState;
-import trb1914.rogue.state.MainMenu;
 
 /**
  * Main class of the application, entry point for the PApplet
@@ -62,8 +62,8 @@ public final class Rogue extends PApplet{
 		//Black background while waiting to load
 		background(0);
 		//Calculate the amount of cols and rows that fits
-		Grid.COLS_VISIBLE = floor(width / SCL * Grid.GRID_SIZE);
-		Grid.ROWS_VISIBLE = floor(height / SCL * Grid.GRID_SIZE);
+		Grid.COLS_VISIBLE = floor(width / (SCL * Grid.GRID_SIZE));
+		Grid.ROWS_VISIBLE = floor(height / (SCL * Grid.GRID_SIZE));
 		
 		//Now load the ini files for the texture indexing
 		Registry.load("textures.ini", "tex");
@@ -87,7 +87,7 @@ public final class Rogue extends PApplet{
 		textSize(16);
 		
 		//Finally create the first game state
-		GameState.current = new MainMenu();
+		GameState.current = new Game();
 	}
 	
 	/**
@@ -100,6 +100,7 @@ public final class Rogue extends PApplet{
 		stage.beginDraw();
 		stage.background(0);
 		GameState.current.render(stage);
+		stage.fill(255);
 		stage.endDraw();
 		
 		//update the current game state

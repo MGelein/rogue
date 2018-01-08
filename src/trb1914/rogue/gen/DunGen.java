@@ -2,8 +2,12 @@ package trb1914.rogue.gen;
 
 import java.util.ArrayList;
 
+import trb1914.debug.Debug;
 import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Player;
+import trb1914.rogue.decor.Bones;
+import trb1914.rogue.decor.Door;
+import trb1914.rogue.decor.LightSource;
 import trb1914.rogue.grid.Grid;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.grid.GridObject;
@@ -268,7 +272,7 @@ public abstract class DunGen {
 				if(Rogue.app.random(1) < 0.5f){
 					String texName = DOOR_V;
 					if(!isWall(grid[i - cols])) texName = DOOR_H;
-					//decoration.add(new Door(x, y, holder, texName));
+					decoration.add(new Door(holder, texName));
 				}
 
 
@@ -276,7 +280,7 @@ public abstract class DunGen {
 			}else if(isFloor(grid[i])){
 				//One in 200 chance to spawn bones
 				if(Rogue.oneIn(200)){
-					//decoration.add(new Bones(x, y, holder));
+					decoration.add(new Bones(holder));
 				}
 			}
 
@@ -284,7 +288,7 @@ public abstract class DunGen {
 			else if(isWall(grid[i]) && isTorchWall(pos)){
 				//One in 50 chance to spawn a lightsource
 				if(Rogue.oneIn(10)){
-					//decoration.add(new LightSource(x, y, holder, TORCH));
+					decoration.add(new LightSource(holder, TORCH));
 				}
 			}
 		}
@@ -476,6 +480,9 @@ public abstract class DunGen {
 				r.tiles.add(new Int2D(x, y));
 			}
 		}
+		//The room is now accepted
+		rooms.add(r);
+	    for(Int2D tile : r.tiles) setCell(tile, ROOM);
 	}
 
 	/**
