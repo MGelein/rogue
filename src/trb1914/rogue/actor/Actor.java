@@ -1,5 +1,6 @@
 package trb1914.rogue.actor;
 
+import trb1914.rogue.ai.Faction;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.grid.GridObject;
 import trb1914.rogue.math.Int2D;
@@ -10,6 +11,9 @@ import trb1914.rogue.math.Int2D;
  */
 public class Actor extends GridObject{
 
+	/** By default actors are not part of a faction*/
+	public Faction faction = Faction.NONE; 
+	
 	/**
 	 * Creates a new Actor at the specified position
 	 * @param parent
@@ -20,7 +24,7 @@ public class Actor extends GridObject{
 	}
 
 	/**
-	 * Every actor has an act method. Mihgt be useless
+	 * Every actor has an act method. Might be useless
 	 */
 	public void act() {};
 

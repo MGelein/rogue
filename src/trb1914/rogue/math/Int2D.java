@@ -41,10 +41,22 @@ public class Int2D {
 			System.err.println("Illegal Int2D definition: " + definition);
 			x = y = 0;
 		}else {
+			if(definition.indexOf("OR") != -1) {//This means texture variants
+				definition = Rogue.app.random(definition.split("OR"));//Pick a random one
+			}
 			String[] parts = definition.split(",");
 			x = Rogue.parseInt(parts[0].trim(), 0);
 			y = Rogue.parseInt(parts[1].trim(), 0);
 		}
+	}
+	
+	/**
+	 * If this Int2D has the same value as the provided object
+	 * @param b
+	 * @return
+	 */
+	public boolean equals(Int2D b) {
+		return b.x == x && b.y == y;
 	}
 	
 	/**

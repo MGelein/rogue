@@ -122,7 +122,7 @@ public class GridCell extends RenderAble{
 	 */
 	public void animate() {
 		for(GridObject o : objects) {
-			if(o.animated) o.animate();
+			o.animate();
 		}
 	}
 	
@@ -150,7 +150,7 @@ public class GridCell extends RenderAble{
 	public void listObjects() {
 		Debug.println("Objects in this cell:", this);
 		for(GridObject o : objects) {
-			Debug.println(" - " + o.texName, this);
+			Debug.println(" - " + o.tex.name, this);
 		}
 	}
 	

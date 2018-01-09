@@ -1,8 +1,8 @@
 package trb1914.rogue.grid;
 
 import processing.core.PGraphics;
-import processing.core.PImage;
 import trb1914.rogue.gen.DunGen;
+import trb1914.rogue.gfx.Tex;
 import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.gfx.Theme;
 import trb1914.rogue.gfx.light.Light;
@@ -19,13 +19,7 @@ public class GridObject extends RenderAble{
 	/** The position of this GridObject*/
 	public Int2D pos;
 	/** The texture we're using to render this object*/
-	protected PImage tex;
-	/** The frame of animation we're on*/
-	private int texFrame = 0;
-	/** The modifier used to load a texture*/
-	private Int2D texMod = new Int2D();
-	/** The name of this texture we're drawing with*/
-	public String texName;
+	public Tex tex;
 	/** By default you can't walk on a GridOjbect*/
 	protected boolean walkable = false;
 	/** By default you can see through a GridObject*/
@@ -73,22 +67,8 @@ public class GridObject extends RenderAble{
 	 * @param s
 	 * @param anim
 	 */
-	public void setTexture(String s, boolean anim) {
-		setTexture(s);
-		animated = anim;
-	}
-
-	/**
-	 * It loads a texture from the Texture memory using the provided
-	 * texture identifier
-	 * @param s
-	 */
-	public void setTexture(String s) {
-		tex = Textures.get(s);
-		texMod = Textures.theme;
-		animated = Textures.isAnimated(s);
-		texName = s;
-		//Debug.println(texName + ": " + tex);
+	public void setTexture(Tex t) {
+		tex = t;
 	}
 
 	/**
@@ -96,15 +76,9 @@ public class GridObject extends RenderAble{
 	 */
 	public void animate() {
 		//First see if we even have a texture loaded
-		if(tex == null) return;
+		if(tex == null || !tex.animated) return;
 		//Advance animation by one frame
-		texFrame ++;
-		//Set the theme to the right modifier
-		Textures.setTheme(texMod);
-		//Retrieve the texture
-		tex = Textures.get(texName, texFrame);
-		//Reset the theme to default
-		Textures.setTheme(Theme.none);
+		tex.animate();
 	}
 
 	/**
@@ -114,7 +88,7 @@ public class GridObject extends RenderAble{
 		//Can't render a null texture
 		if(tex == null) return;
 		//Now render the image
-		g.image(tex, pos.x * Grid.GRID_SIZE, pos.y * Grid.GRID_SIZE, Grid.GRID_SIZE, Grid.GRID_SIZE);
+		g.image(tex.img, pos.x * Grid.GRID_SIZE, pos.y * Grid.GRID_SIZE, tex.size, tex.size);
 	}
 
 	/**
@@ -139,7 +113,7 @@ public class GridObject extends RenderAble{
 
 		//If it is not a void tile, set the texture
 		if(!DunGen.isType(DunGen.VOID, dungeonTile)){
-			setTexture(dungeonTile);
+			setTexture(new Tex(dungeonTile));
 		}
 
 		//Reset theme

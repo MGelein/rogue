@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Player;
+import trb1914.rogue.ai.AIActor;
 import trb1914.rogue.decor.Bones;
 import trb1914.rogue.decor.Door;
 import trb1914.rogue.decor.LightSource;
@@ -259,7 +260,17 @@ public abstract class DunGen {
 	public static ArrayList<GridObject> generateDecoration(Grid gameGrid){
 		//STEP 0: Setup for creation
 		decoration = new ArrayList<GridObject>();
+		
+		//Pick a random room
+		Room startRoom = Rogue.app.random(rooms);
+		//Keep picking a random position untill its a walkable tile
+		Int2D startPos = Rogue.app.random(startRoom.tiles);
+		while(!gameGrid.get(startPos).isWalkable()) startPos = Rogue.app.random(startRoom.tiles);
+		//Get the corresponding gridCell
+		GridCell startHolder = gameGrid.get(startPos);
+		addDecoration(new Player(startHolder));
 
+		//Now go through every tile and see if we have some more misscellanous stuff to add
 		for(int i = 0; i < grid.length; i++){
 			GridCell holder = gameGrid.get(i);
 			int x = i % cols;
@@ -271,7 +282,7 @@ public abstract class DunGen {
 				if(Rogue.app.random(1) < 0.5f){
 					String texName = DOOR_V;
 					if(!isWall(grid[i - cols])) texName = DOOR_H;
-					decoration.add(new Door(holder, texName));
+					addDecoration(new Door(holder, texName));
 				}
 
 
@@ -279,7 +290,11 @@ public abstract class DunGen {
 			}else if(isFloor(grid[i])){
 				//One in 200 chance to spawn bones
 				if(Rogue.oneIn(20)){
-					decoration.add(new Bones(holder));
+					addDecoration(new Bones(holder));
+				}
+				
+				if(Rogue.oneIn(20)) {
+					addDecoration(new AIActor(holder));
 				}
 			}
 
@@ -287,19 +302,28 @@ public abstract class DunGen {
 			else if(isWall(grid[i]) && isTorchWall(pos)){
 				//One in 50 chance to spawn a lightsource
 				if(Rogue.oneIn(10)){
-					decoration.add(new LightSource(holder, TORCH));
+					addDecoration(new LightSource(holder, TORCH));
 				}
 			}
 		}
-
-		/* Place the player in the startRoom*/
-		Room startRoom = Rogue.app.random(rooms);
-		Int2D startPos = Rogue.app.random(startRoom.tiles);
-		GridCell startHolder = gameGrid.get(startPos.x, startPos.y);
-		decoration.add(new Player(startHolder));
-
+		
 		//STEP FINAL: return the grid
 		return decoration;
+	}
+	
+	/**
+	 * Tries to add the provided decoration to the map. Can only be done if
+	 * it is actually not an already occupied position
+	 * @param o
+	 */
+	private static void addDecoration(GridObject o) {
+		for(GridObject o2 : decoration) {
+			if(o2.pos.equals(o.pos)) {
+				return;//Same position, abort adding
+			}
+		}
+		//If we get to here there was nothing on that position, add the gridobject
+		decoration.add(o);
 	}
 
 	/**

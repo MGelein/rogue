@@ -1,6 +1,7 @@
 package trb1914.rogue.decor;
 
 import trb1914.debug.Debug;
+import trb1914.rogue.gfx.Tex;
 import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.gfx.light.Light;
 import trb1914.rogue.gfx.light.LightTemplate;
@@ -40,8 +41,8 @@ public class LightSource extends GridObject{
 		parent.grid.addLight(light);
 		lit = true;
 		//If it was previously extinguished
-		if(Textures.exists(texName.replaceAll("_extinguished", ""))){
-			setTexture(texName.replaceAll("_extinguished", ""));
+		if(Textures.exists(tex.name.replaceAll("_extinguished", ""))){
+			setTexture(new Tex(tex.name.replaceAll("_extinguished", "")));
 		}
 	}
 
@@ -66,8 +67,8 @@ public class LightSource extends GridObject{
 		lit = false;
 
 		//If extinguished texture exists, set it to it
-		if(Textures.exists(texName+"_extinguished")){
-			setTexture(texName + "_extinguished", false);
+		if(Textures.exists(tex.name+"_extinguished")){
+			setTexture(new Tex(tex.name + "_extinguished", false));
 		}
 	}
 	

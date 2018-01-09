@@ -21,7 +21,7 @@ public class Door extends GridObject {
 		super(parent.pos.x, parent.pos.y, parent);
 		parse(s);
 		if(s.indexOf("locked") != -1) locked = true;
-		setTexture(texName, false);
+		tex.animated = false;
 		walkable = false; 
 		opaque = true;
 	}

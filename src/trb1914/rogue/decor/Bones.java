@@ -24,6 +24,9 @@ public class Bones extends GridObject{
 		parse(Rogue.app.random(boneTypes));
 		opaque = walkable = false;
 	}
+	
+	/** Override animate to not allow animation*/
+	public void animate() {};
 
 	/**
 	 * Interacting with the pile of bones turns it to dust
@@ -31,8 +34,7 @@ public class Bones extends GridObject{
 	public void interact(){
 		walkable = true;
 		opaque = false;
-		texName = null;
 		parent.remove(this);
-		parent.add(new Disintegrate(parent, tex));
+		parent.add(new Disintegrate(parent, tex.img));
 	}
 }

@@ -1,5 +1,6 @@
 package trb1914.rogue.actor;
 
+import trb1914.rogue.ai.Faction;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.math.Int2D;
 
@@ -19,6 +20,8 @@ public class Player extends Actor{
 		parse("player.rogue");
 		moveTo(pos);
 		parent.grid.focusActor = this;
+		//Player is, naturally, part of player faction
+		faction = Faction.PLAYER;
 	}
 
 	/**

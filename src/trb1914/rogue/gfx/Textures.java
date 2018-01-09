@@ -124,6 +124,50 @@ public abstract class Textures {
 		return spriteSheets.get(s.substring(0, s.indexOf(".")).trim().toLowerCase()) //get sheet name
 				.get(Registry.getInt2D("tex." + s).copy().add(themeModifier));                     //get sheet coords
 	}
+	
+	/**
+	 * Returns the sheet name for this texture
+	 * @param s
+	 * @return
+	 */
+	public static String getSheetName(String s) {
+		return s.substring(0,  s.indexOf("."));
+	}
+	
+	/**
+	 * Returns the texture coordinate after the theme has been applied
+	 * @param s
+	 * @return
+	 */
+	public static Int2D getTexCoord(String s) {
+		return Registry.getInt2D("tex." + s).copy().add(theme); 
+	}
+	
+	/**
+	 * Retuns the caced version of a sprite at the provided location on the
+	 * specified sheet
+	 * @param sheet
+	 * @param location
+	 * @return
+	 */
+	public static PImage getCached(String sheet, Int2D location) {
+		if(isAnimated(sheet)) {
+			return animSheets.get(sheet).get(location, 0);
+		}else {
+			return spriteSheets.get(sheet).get(location);
+		}
+	}
+	
+	/**
+	 * Returns the cached version of a animated sprite at the provided frame
+	 * @param sheet
+	 * @param location
+	 * @param frame
+	 * @return
+	 */
+	public static PImage getCached(String sheet, Int2D location, int frame) {
+		return animSheets.get(sheet).get(location, frame);
+	}
 
 
 	/**
@@ -155,8 +199,7 @@ public abstract class Textures {
 	 */
 	public static boolean isAnimated(String s){
 		if(s.indexOf(".") == -1) {
-			System.err.println("Invalid texture name, no sheet name: " + s);
-			return false;
+			return animSheets.containsKey(s);
 		}
 		return animSheets.containsKey(s.substring(0, s.indexOf(".")).trim().toLowerCase());
 	}
