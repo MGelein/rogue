@@ -60,6 +60,48 @@ public class Int2D {
 	}
 	
 	/**
+	 * Returns the distance between two Int2D instances
+	 * @return
+	 */
+	public float dist(Int2D b) {
+		float dx = x - b.x;
+		float dy = y - b.y;
+		return Rogue.sqrt(dx * dx + dy * dy);
+	}
+	
+	/**
+	 * Returns a Int2D that is x - 1, y
+	 * @return
+	 */
+	public Int2D left() {
+		return new Int2D(x - 1, y);
+	}
+	
+	/**
+	 * Returns an Int2D that is x + 1, y
+	 * @return
+	 */
+	public Int2D right() {
+		return new Int2D(x + 1, y);
+	}
+	
+	/**
+	 * Returns an Int2D that is x, y - 1
+	 * @return
+	 */
+	public Int2D up() {
+		return new Int2D(x, y - 1);
+	}
+	
+	/**
+	 * Returns an Int2D that is x, y + 1
+	 * @return
+	 */
+	public Int2D down() {
+		return new Int2D(x, y + 1);
+	}
+	
+	/**
 	 * Sets the parts of this vector to a random, odd number between min and max
 	 * @param minX
 	 * @param maxX

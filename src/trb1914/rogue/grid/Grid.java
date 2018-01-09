@@ -18,6 +18,8 @@ import trb1914.rogue.render.MouseAble;
  */
 public class Grid extends MouseAble implements IUpdate{
 
+	/** The current instance of Grid that is loaded*/
+	public static Grid current;
 	/** The extra scaling to make the grid better visible*/
 	public static final int SCL = 2;
 	/** The amount of pixels all the tiles are wide and high*/
@@ -57,6 +59,7 @@ public class Grid extends MouseAble implements IUpdate{
 	 * @param maxRows
 	 */
 	public Grid(int maxCols, int maxRows) {
+		current = this;
 		rows = maxRows;
 		cols = maxCols;
 
