@@ -8,6 +8,14 @@ import trb1914.rogue.Rogue;
  * @author trb1914
  */
 public class Int2D {
+	
+	public final static Int2D LEFT = new Int2D(-1, 0); 
+	public final static Int2D RIGHT = new Int2D(1, 0); 
+	public final static Int2D DOWN = new Int2D(0, 1); 
+	public final static Int2D UP = new Int2D(0, -1); 
+	
+	
+	
 	/** The x-part of this object*/
 	public int x;
 	/** The y-part of this object*/

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import processing.core.PGraphics;
 import trb1914.debug.Debug;
 import trb1914.rogue.Rogue;
+import trb1914.rogue.actor.Actor;
 import trb1914.rogue.math.Int2D;
 import trb1914.rogue.render.RenderAble;
 
@@ -48,6 +49,8 @@ public class GridCell extends RenderAble{
 	public boolean isWalkable() {
 		//See if any object is not walkable, if so return it
 		for(GridObject o : objects) if(!o.walkable) return false;
+		//See if any to be added objects are not walkable
+		for(GridObject o : toAdd) if(!o.walkable) return false;
 		return true;
 	}
 	
@@ -127,10 +130,11 @@ public class GridCell extends RenderAble{
 	}
 	
 	/**
-	 * Interact with all the objects in this GridCell
+	 * Interact with all the objects in this GridCell.
+	 * The interaction is done by the provided actor
 	 */
-	public void interact() {
-		for(GridObject o : objects) o.interact();
+	public void interact(Actor actor) {
+		for(GridObject o : objects) o.interact(actor);
 	}
 	
 	/**

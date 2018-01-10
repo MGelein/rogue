@@ -1,5 +1,6 @@
 package trb1914.rogue.decor;
 
+import trb1914.rogue.actor.Actor;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.grid.GridObject;
 /**
@@ -29,7 +30,7 @@ public class Door extends GridObject {
 	/**
 	 * Interacting with the door opens and closes it
 	 */
-	public void interact(){
+	public void interact(Actor actor){
 		if(locked) return;
 		open = !open;
 		tex.animate();

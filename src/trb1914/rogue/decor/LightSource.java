@@ -1,6 +1,7 @@
 package trb1914.rogue.decor;
 
 import trb1914.debug.Debug;
+import trb1914.rogue.actor.Actor;
 import trb1914.rogue.gfx.Tex;
 import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.gfx.light.Light;
@@ -75,7 +76,7 @@ public class LightSource extends GridObject{
 	/**
 	 * Interacts with this lightsource
 	 */
-	public void interact() {
+	public void interact(Actor actor) {
 		toggle();
 	}
 	

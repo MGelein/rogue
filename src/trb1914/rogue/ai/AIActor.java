@@ -1,6 +1,7 @@
 package trb1914.rogue.ai;
 
 import trb1914.rogue.actor.Actor;
+import trb1914.rogue.grid.Grid;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.math.Int2D;
 
@@ -21,12 +22,15 @@ public class AIActor extends Actor{
 	}
 	
 	/**
-	 * Every time we animate, make a movement
+	 * In the update we also  check if we have selected a movement yet
 	 */
-	public void animate() {
-		super.animate();
-		Int2D vel = new Int2D().rndDir();
-		Int2D dest = pos.copy().add(vel);
-		moveTo(dest);
+	public void update() {
+		//First do super update
+		super.update();
+		
+		//Now check if we have a movement yet
+		if(nextAction == null && Grid.current.focusActor != this) {
+			move(new Int2D().rndDir());
+		}
 	}
 }

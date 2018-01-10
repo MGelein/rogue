@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import processing.core.PGraphics;
 import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Actor;
+import trb1914.rogue.actor.Director;
 import trb1914.rogue.gen.DunGen;
 import trb1914.rogue.gfx.light.Light;
 import trb1914.rogue.interfaces.IUpdate;
@@ -80,6 +81,8 @@ public class Grid extends MouseAble implements IUpdate{
 	 * @param g
 	 */
 	public void render(PGraphics g){
+		//update viewpoint to focusactor
+		viewPoint = focusActor.pos.copy();
 		//Translate matrix for map viewing.
 		g.pushMatrix();
 		g.translate((-viewPoint.x + (COLS_VISIBLE / 2)) * GRID_SIZE,
@@ -108,6 +111,9 @@ public class Grid extends MouseAble implements IUpdate{
 
 		//Also check if lighting needs updating
 		if(lightingUpdate) calcLighting();
+		
+		//Now update all Actors
+		Director.update();
 	}
 
 	/**
@@ -120,7 +126,8 @@ public class Grid extends MouseAble implements IUpdate{
 		Int2D clickPos = Grid.screenToGrid(x, y);
 		clickPos.sub(Rogue.floor(COLS_VISIBLE / 2), Rogue.floor(ROWS_VISIBLE / 2));
 		clickPos.add(viewPoint);
-		get(clickPos).interact();
+		//Clicking magically makes the focusActor interact with something
+		get(clickPos).interact(focusActor);
 		//get(clickPos).listObjects();
 	}
 

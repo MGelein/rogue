@@ -1,6 +1,7 @@
 package trb1914.rogue.decor;
 
 import trb1914.rogue.Rogue;
+import trb1914.rogue.actor.Actor;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.grid.GridObject;
 import trb1914.rogue.particles.Disintegrate;
@@ -31,7 +32,7 @@ public class Bones extends GridObject{
 	/**
 	 * Interacting with the pile of bones turns it to dust
 	 */
-	public void interact(){
+	public void interact(Actor actor){
 		walkable = true;
 		opaque = false;
 		parent.remove(this);

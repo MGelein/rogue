@@ -1,6 +1,7 @@
 package trb1914.rogue.grid;
 
 import processing.core.PGraphics;
+import trb1914.rogue.actor.Actor;
 import trb1914.rogue.gen.DunGen;
 import trb1914.rogue.gfx.Tex;
 import trb1914.rogue.gfx.Textures;
@@ -52,9 +53,10 @@ public class GridObject extends RenderAble{
 
 	/**
 	 * By default a GridObject can be interacted with. It just doesn't
-	 * do anything meaningful 
+	 * do anything meaningful untill overriden
+	 * @param actor the actor that is doing the interacting
 	 */
-	public void interact() {};
+	public void interact(Actor actor) {};
 
 	/**
 	 * By default GridObjects can be updated, it just doesn't do anything useful

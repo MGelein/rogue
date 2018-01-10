@@ -1,6 +1,9 @@
 package trb1914.rogue.actor;
 
+import trb1914.rogue.action.Action;
+import trb1914.rogue.action.MoveAction;
 import trb1914.rogue.ai.Faction;
+import trb1914.rogue.grid.Grid;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.grid.GridObject;
 import trb1914.rogue.math.Int2D;
@@ -10,9 +13,23 @@ import trb1914.rogue.math.Int2D;
  * @author trb1914
  */
 public class Actor extends GridObject{
+	
+	/** Next actor in the linked list */
+	protected Actor next = null;
+	/** Previous actor in the linked list*/
+	protected Actor prev = null;
 
 	/** By default actors are not part of a faction*/
 	public Faction faction = Faction.NONE; 
+	
+	/** The energy level of this actor. If energy reaches threshold, actions can be taken*/
+	public float energy = 0;
+	
+	/** The amount of energy received every time we're reached*/
+	public float speed = 10;
+	
+	/** The next action we're going to take. Null if we haven't selected an action yet*/
+	protected Action nextAction = null;
 	
 	/**
 	 * Creates a new Actor at the specified position
@@ -20,60 +37,36 @@ public class Actor extends GridObject{
 	 */
 	public Actor(GridCell parent) {
 		super(parent.pos, parent);
+		Director.addActor(this);
 		opaque = false;
 	}
-
+	
 	/**
-	 * Every actor has an act method. Might be useless
+	 * Sets the next action of the actor to be to move in the provided direction
+	 * @param dir
 	 */
-	public void act() {};
-
+	public void move(Int2D dir) {
+		nextAction = new MoveAction(this, dir);
+	}
+	
 	/**
-	 * Every actor can move to locations
-	 * @param x
-	 * @param y
+	 * Temporary override of the interact mechanism to allow possession
 	 */
-	public void moveTo(int x, int y){
-		//First check if it is possible to moveTo
-		if(!parent.grid.get(x, y).isWalkable()) {
-			//If not walkable, try to interact with it
-			parent.grid.get(x, y).interact();
-			return;
+	public void interact(Actor actor) {
+		if(actor == Grid.current.focusActor) {
+			Grid.current.focusActor = this;
 		}
-
-		//Remove from previous parent
-		parent.remove(this);
-		pos.x = x;
-		pos.y = y;
-		//Get new parent and re-add
-		parent = parent.grid.get(pos);
-		parent.add(this);
-	}
-	/**
-	 * Every actor can move to locations
-	 * @param pos
-	 */
-	public void moveTo(Int2D pos) {
-		moveTo(pos.x, pos.y);
 	}
 	
-	/**
-	 * Moves this actor to the left
-	 */
-	public void left(){moveTo(pos.x - 1, pos.y);}
+	/** Moves the actor left*/
+	public void left() {move(Int2D.LEFT);}
 	
-	/**
-	 * Moves this actor to the right
-	 */
-	public void right(){moveTo(pos.x + 1, pos.y);}
+	/** Moves the actor right*/
+	public void right() {move(Int2D.RIGHT);}
 	
-	/**
-	 * Moves this actor upwards
-	 */
-	public void up(){moveTo(pos.x, pos.y - 1);}
+	/**Moves the actor up */
+	public void up() {move(Int2D.UP);}
 	
-	/**
-	 * Moves this actor downwards
-	 */
-	public void down(){moveTo(pos.x, pos.y + 1);}
+	/** Moves the actor down */
+	public void down() {move(Int2D.DOWN);}
 }
