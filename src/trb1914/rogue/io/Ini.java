@@ -1,6 +1,7 @@
 package trb1914.rogue.io;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import trb1914.rogue.Rogue;
@@ -14,6 +15,8 @@ public class Ini {
 	
 	/** Holds the data values ordered by key*/
 	private HashMap<String, String> map = new HashMap<String, String>();
+	/** A list of Strings that are the different category prefixes found in this file*/
+	public ArrayList<String> categories = new ArrayList<String>();
 	
 	/**
 	 * Creates a new Ini object and tries to load and parse the file
@@ -47,13 +50,14 @@ public class Ini {
 			else if(line.charAt(0) == '[') {
 				//Parse the prefix from the line
 				prefix = line.substring(1, line.length() - 1) + ".";
+				categories.add(prefix.substring(0, prefix.indexOf(".")));
 			}
 			//If this is a keyValue pair
 			else if(line.indexOf('=') != -1) {
 				//Split the pair in two
 				String[] parts = line.split("=");
-				//Now put the split pair into the map
-				map.put(prefix + parts[0], parts[1]);
+				//Now put the split pair into the map, and put an empty string if the second part is not defined
+				map.put(prefix + parts[0], (parts.length != 1) ? parts[1] : "");
 			}	
 		}
 	}

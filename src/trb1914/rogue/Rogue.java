@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
+import trb1914.rogue.ai.Faction;
 import trb1914.rogue.gfx.Textures;
 import trb1914.rogue.grid.Grid;
 import trb1914.rogue.input.Key;
@@ -69,6 +70,8 @@ public final class Rogue extends PApplet{
 		Registry.load("textures.ini", "tex");
 		//Then load all of the lighting templates
 		Registry.load("lights.ini", "light");
+		//Load all factions
+		Faction.load();
 		//Set the colorMode to HSB
 		colorMode(PConstants.HSB);
 		

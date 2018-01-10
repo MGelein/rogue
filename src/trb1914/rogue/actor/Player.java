@@ -22,7 +22,7 @@ public class Player extends Actor{
 		parse("player.rogue");
 		parent.grid.focusActor = this;
 		//Player is, naturally, part of player faction
-		faction = Faction.PLAYER;
+		faction = Faction.get("player");
 	}
 	
 	/**

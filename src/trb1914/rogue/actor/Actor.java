@@ -20,7 +20,7 @@ public class Actor extends GridObject{
 	protected Actor prev = null;
 
 	/** By default actors are not part of a faction*/
-	public Faction faction = Faction.NONE; 
+	public Faction faction = Faction.get("none"); 
 	
 	/** The energy level of this actor. If energy reaches threshold, actions can be taken*/
 	public float energy = 0;
