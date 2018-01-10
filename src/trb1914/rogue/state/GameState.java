@@ -7,6 +7,7 @@ import trb1914.rogue.input.MouseDistributor;
 import trb1914.rogue.interfaces.IUpdate;
 import trb1914.rogue.render.MouseAble;
 import trb1914.rogue.render.RenderAble;
+import trb1914.rogue.util.ManagedList;
 
 /**
  * Every state of the game (Main menu, main game, settings, etc) all inherit from this screen
@@ -17,55 +18,37 @@ public class GameState {
 	/** The GameState that is currently showing, updating, etc*/
 	public static GameState current;
 	
-	/** List of objects we should render*/
-	private ArrayList<RenderAble> renderObjects = new ArrayList<RenderAble>();
-
-	/** List maintenance*/
-	private ArrayList<RenderAble> renderToAdd = new ArrayList<RenderAble>();
-	/** List maintenance*/
-	private ArrayList<RenderAble> renderToRem = new ArrayList<RenderAble>();
+	/** The new managed list type of renderAble ites*/
+	private ManagedList<RenderAble> renders = new ManagedList<RenderAble>();
 
 	/** List of objects we should update*/
-	private ArrayList<IUpdate> updateObjects = new ArrayList<IUpdate>();
-
-	/** List maintenance*/
-	private ArrayList<IUpdate> updateToAdd = new ArrayList<IUpdate>();
-	/** List maintenance*/
-	private ArrayList<IUpdate> updateToRem = new ArrayList<IUpdate>();
+	private ManagedList<IUpdate> updaters = new ManagedList<IUpdate>();
 
 	/**
 	 * Every gamestate has an update function in which we update all subscribed updaters
 	 */
 	public void update() {
 		//Update all objects
-		for(IUpdate u : updateObjects) u.update();
+		for(IUpdate u : updaters) u.update();
 
-		//Check if we need to do list maintenance
-		if(updateToAdd.size() > 0 || updateToRem.size() > 0) {
-			if(updateToAdd.size() > 0) {
-				for(IUpdate u : updateToAdd) updateObjects.add(u);
-				updateToAdd.clear();
-			}else {
-				for(IUpdate u : updateToRem) updateObjects.remove(u);
-				updateToRem.clear();
-			}
-		}
+		//Do list maintenance
+		updaters.doMaintenance();
 	}
 
 	/**
 	 * Adds one or more IUpdate objects to the list of objects to be updated in this state
 	 * @param updaters
 	 */
-	public void addUpdate(IUpdate... updaters) {
-		for(IUpdate u : updaters) updateToAdd.add(u);
+	public void addUpdate(IUpdate... updateObjs) {
+		for(IUpdate u : updateObjs) updaters.add(u);
 	}
 
 	/**
 	 * Removes one or more IUpdate objects from the list of objects to be updated in this state
 	 * @param updaters
 	 */
-	public void removeUpdate(IUpdate... updaters) {
-		for(IUpdate u : updaters) updateToRem.add(u);
+	public void removeUpdate(IUpdate... updateObjs) {
+		for(IUpdate u : updateObjs) updaters.add(u);
 	}
 
 	/**
@@ -75,50 +58,42 @@ public class GameState {
 	 */
 	public void render(PGraphics g) {
 		//First render all objects
-		for(RenderAble r : renderObjects) r.render(g);
+		for(RenderAble r : renders) r.render(g);
 
-		//Check if we need to do list maintenance
-		if(renderToAdd.size() > 0 || renderToRem.size() > 0) {
-			if(renderToAdd.size() > 0) {
-				for(RenderAble r : renderToAdd) renderObjects.add(r);
-				renderToAdd.clear();
-			}else {
-				for(RenderAble r : renderToRem) renderObjects.remove(r);
-				renderToRem.clear();
-			}
-		}
+		//Now do list maintenance
+		renders.doMaintenance();
 	}
 	
 	/**
 	 * Adds one or more RenderAble objects to the list of objects to be rendered in this state
 	 * @param renders
 	 */
-	public void addRender(RenderAble...renders) {
-		for(RenderAble r : renders) renderToAdd.add(r);
+	public void addRender(RenderAble...renderObjs) {
+		for(RenderAble r : renderObjs) renders.add(r);
 	}
 	
 	/**
 	 * Removes one or more RenderAble objects from the list of objects to be rendered in this state
 	 * @param renders
 	 */
-	public void removeRender(RenderAble...renders) {
-		for(RenderAble r : renders) renderToRem.add(r);
+	public void removeRender(RenderAble...renderObjs) {
+		for(RenderAble r : renderObjs) renders.remove(r);
 	}
 	
 	/**
 	 * Adds one or more objects to the subscriber list of the mouseDistibutor
 	 * @param mousers
 	 */
-	public void addMouse(MouseAble... mousers) {
-		for(MouseAble m : mousers) MouseDistributor.add(m);
+	public void addMouse(MouseAble... mouseObjs) {
+		for(MouseAble m : mouseObjs) MouseDistributor.add(m);
 	}
 	
 	/**
 	 * Removes one or more objects frm the subscriber list of the mousedistributor
 	 * @param mousers
 	 */
-	public void removeMouse(MouseAble... mousers) {
-		for(MouseAble m : mousers) MouseDistributor.remove(m);
+	public void removeMouse(MouseAble... mouseObjs) {
+		for(MouseAble m : mouseObjs) MouseDistributor.remove(m);
 	}
 	
 	/**
