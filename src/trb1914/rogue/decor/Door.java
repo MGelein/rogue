@@ -32,7 +32,7 @@ public class Door extends GridObject {
 	public void interact(){
 		if(locked) return;
 		open = !open;
-		animate();
+		tex.animate();
 
 		//Set cell walkable
 		walkable = open;
