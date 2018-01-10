@@ -30,9 +30,11 @@ public class Path {
 		ArrayList<PNode> closed = new ArrayList<PNode>();
 		PNode startNode = new PNode(start);
 		PNode endNode = null;
+		open.add(startNode);
 		
+		boolean endReached = false;
 		//While the open list is not empty
-		while(open.size() > 0) {
+		while(open.size() > 0 && !endReached) {
 			//Get the lowest node from the list
 			PNode q = lowestCost(open);
 			//Remove from open list
@@ -42,6 +44,8 @@ public class Path {
 			//For each successor
 			for(PNode succ : successors) {
 				if(succ.pos.equals(end)) {// If this is the goal, we're done, this is the head of the path
+					endReached = true;
+					endNode = succ;
 					break;
 				}
 				//Set the h to the distance to the end point
@@ -105,12 +109,16 @@ public class Path {
 	 * @param endNode
 	 */
 	private Path(PNode endNode) {
+		//If enNode = null, this was a dead path
+		if(endNode == null) return;
 		end = endNode.pos;
 		while(endNode != null) {
 			nodes.add(endNode);
 			endNode = endNode.parent;
 		}
 		start = nodes.get(nodes.size() - 1).pos;
+		//Remove the last node as that is the star tposition
+		nodes.remove(nodes.size() - 1);
 	}
 	
 	/**
@@ -118,6 +126,8 @@ public class Path {
 	 * @return
 	 */
 	public Int2D next() {
+		//Returns null if no nodes are left
+		if(nodes.size() < 1) return null;
 		//Get the last element in the list (closest to the original source)
 		PNode node = nodes.get(nodes.size() - 1);
 		//Remove this node from the list
