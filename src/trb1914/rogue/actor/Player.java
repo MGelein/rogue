@@ -19,7 +19,7 @@ public class Player extends Actor{
 	 */
 	public Player(GridCell parent){
 		super(parent);
-		parse("player.rogue");
+		parse("player.mage");
 		parent.grid.focusActor = this;
 		//Player is, naturally, part of player faction
 		faction = Faction.get("player");

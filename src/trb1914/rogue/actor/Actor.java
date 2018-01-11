@@ -25,6 +25,9 @@ public class Actor extends GridObject{
 	/** The energy level of this actor. If energy reaches threshold, actions can be taken*/
 	public float energy = 0;
 	
+	/** The amount of vision we have. Is the amount of tiles we can see in darkness*/
+	public float vision = 5;
+	
 	/** The amount of energy received every time we're reached*/
 	public float speed = 10;
 	
@@ -56,6 +59,13 @@ public class Actor extends GridObject{
 		if(actor == Grid.current.focusActor) {
 			Grid.current.focusActor = this;
 		}
+	}
+	
+	/**
+	 * Calculates the FOV using an expanding tiles like LightSource and LightPoint
+	 */
+	public void calculateFOV() {
+		
 	}
 	
 	/** Moves the actor left*/

@@ -63,7 +63,9 @@ public class Light {
 			int origColor = grid.get(l.pos.x, l.pos.y).lighting;
 			int targetColor = c;
 			origColor = Rogue.app.lerpColor(origColor, targetColor, l.getStrength() / 2);
-			grid.get(l.pos.x, l.pos.y).lighting = origColor;
+			grid.get(l.pos).lighting = origColor;
+			//Add the strength to the lighting strength
+			grid.get(l.pos).lightness += l.getStrength();
 		}
 	}
 

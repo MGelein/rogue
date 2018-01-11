@@ -7,6 +7,7 @@ import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Actor;
 import trb1914.rogue.actor.Director;
 import trb1914.rogue.gen.DunGen;
+import trb1914.rogue.gfx.light.FOW;
 import trb1914.rogue.gfx.light.Light;
 import trb1914.rogue.interfaces.IUpdate;
 import trb1914.rogue.math.Int2D;
@@ -53,6 +54,8 @@ public class Grid extends MouseAble implements IUpdate{
 	public boolean lightingUpdate = false;
 	/** This actor is followed by the camera*/
 	public Actor focusActor;
+	/** Fog of War used to obstruct vision*/
+	public FOW fow;
 
 	/**
 	 * Creates a new Grid of the provided size
@@ -63,6 +66,9 @@ public class Grid extends MouseAble implements IUpdate{
 		current = this;
 		rows = maxRows;
 		cols = maxCols;
+		
+		//Initialize the fow
+		fow = new FOW();
 
 		//Initialize the grid
 		cells = new GridCell[cols * rows];
@@ -74,6 +80,14 @@ public class Grid extends MouseAble implements IUpdate{
 		
 		//After creation automatically load first dungeon
 		load();
+	}
+	
+	/***
+	 * Returns the list of gridCells, use With caution!!
+	 * @return
+	 */
+	public GridCell[] getCells() {
+		return cells;
 	}
 
 	/**
@@ -93,6 +107,10 @@ public class Grid extends MouseAble implements IUpdate{
 		}
 		//Reset tint
 		g.tint(255);
+		
+		//Render FOW
+		fow.render(g);
+		
 		g.popMatrix();
 	}
 
@@ -157,7 +175,10 @@ public class Grid extends MouseAble implements IUpdate{
 	 */
 	private void calcLighting() {
 		//Reset all cells to ambient
-		for(GridCell c : cells) c.lighting = ambientLight;
+		for(GridCell c : cells) {
+			c.lighting = ambientLight;
+			c.lightness = 0f;
+		}
 
 		//Recalculate all lighting
 		for(Light l : lights) {l.refresh(); l.calculate();};

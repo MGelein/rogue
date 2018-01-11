@@ -22,6 +22,8 @@ public class GridCell extends RenderAble{
 	public Grid grid;
 	/** The color this cell uses for lighting*/
 	public int lighting;
+	/** how light this tile is. If it is 1 or over , it means this tile is fully lit, if it is zero or below it means this tile is fully dark*/
+	public float lightness = 0f;
 	
 	/** List of all objects in this cell*/
 	private ArrayList<GridObject> objects = new ArrayList<GridObject>();
