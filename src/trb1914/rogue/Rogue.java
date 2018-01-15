@@ -63,13 +63,15 @@ public final class Rogue extends PApplet{
 		//Black background while waiting to load
 		background(0);
 		//Calculate the amount of cols and rows that fits
-		Grid.COLS_VISIBLE = floor(width / (SCL * Grid.GRID_SIZE));
-		Grid.ROWS_VISIBLE = floor(height / (SCL * Grid.GRID_SIZE));
+		Grid.COLS_VISIBLE = floor(width / (SCL * Grid.GRID_SIZE)) - 5;
+		Grid.ROWS_VISIBLE = floor(height / (SCL * Grid.GRID_SIZE)) - 5;
 		
 		//Now load the ini files for the texture indexing
 		Registry.load("textures.ini", "tex");
 		//Then load all of the lighting templates
 		Registry.load("lights.ini", "light");
+		//Load all sound definitions
+		Registry.load("audio.ini", "audio");
 		//Load all factions
 		Faction.load();
 		//Set the colorMode to HSB
