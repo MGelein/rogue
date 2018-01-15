@@ -128,14 +128,15 @@ public class Grid extends MouseAble implements IUpdate{
 			for(GridCell c: cells) c.animate();
 		}
 
+		
+		//Update FOV of focus actor, also based on if the lighting needs updating
+		FOV.refresh(lightingUpdate);
+		
 		//Also check if lighting needs updating
 		if(lightingUpdate) calcLighting();
 		
 		//Now update all Actors
 		Director.update();
-		
-		//Update FOV of focus actor
-		FOV.refresh();
 	}
 
 	/**

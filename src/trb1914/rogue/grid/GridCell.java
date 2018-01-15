@@ -3,6 +3,7 @@ package trb1914.rogue.grid;
 import java.util.ArrayList;
 
 import processing.core.PGraphics;
+import processing.core.PImage;
 import trb1914.debug.Debug;
 import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Actor;
@@ -36,6 +37,8 @@ public class GridCell extends RenderAble{
 	
 	/** Saves result of last render call for isvisible*/
 	private boolean visible = false;
+	/** The image used for the minimap*/
+	private PImage minimapImage = null;
 	
 	/**
 	 * Creates a new GridCell at the specified position with the specified grid
@@ -49,6 +52,35 @@ public class GridCell extends RenderAble{
 		grid = g;
 	}
 	
+	/**
+	 * Returns the color this tile should be on the minimap
+	 * @return
+	 */
+	public int getMiniMapColor() {
+		//If not discovered or there are no objects on this tile, return black
+		if(!discovered ||objects.size() < 1) return MiniMap.UNDISCOVERED;
+		
+		//If this grid contains the focusActor, return a white dot
+		for(GridObject o : objects) if(o == grid.focusActor) return MiniMap.PLAYER;
+		
+		//Check if we need to create the minimap image first
+		if(minimapImage == null) {
+			minimapImage = new PImage(1, 1);
+			//Special case where texture hasn't been set
+			if(objects.get(0).tex == null) {
+				minimapImage.loadPixels();
+				minimapImage.pixels[0] = MiniMap.UNDISCOVERED;
+				minimapImage.updatePixels();
+			}else {
+				minimapImage.copy(objects.get(0).tex.img, 0, 0, 16, 16, 0, 0, 1, 1);	
+			}
+		}
+		//If we have a minimap image, return its color pixel
+		minimapImage.loadPixels();
+		int c = minimapImage.pixels[0];
+		minimapImage.updatePixels();
+		return c;
+	}
 	/**
 	 * Returns whether this cell is walkable
 	 * @return

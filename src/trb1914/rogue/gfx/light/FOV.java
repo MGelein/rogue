@@ -35,8 +35,17 @@ public class FOV {
 	 * refreshing
 	 * @param p
 	 */
+	public static void refresh(boolean force) {
+		if(!lastPos.equals(Grid.current.focusActor.pos) || force) calculate();
+	}
+	
+	/**
+	 * Checks the last caclulated FOV pos against current actor pos to see if we need
+	 * refreshing
+	 * @param p
+	 */
 	public static void refresh() {
-		if(!lastPos.equals(Grid.current.focusActor.pos)) calculate();
+		refresh(false);
 	}
 	
 	/**

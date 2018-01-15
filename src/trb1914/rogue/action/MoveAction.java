@@ -1,6 +1,7 @@
 package trb1914.rogue.action;
 
 import trb1914.rogue.actor.Actor;
+import trb1914.rogue.gfx.light.FOV;
 import trb1914.rogue.grid.Grid;
 import trb1914.rogue.math.Int2D;
 
@@ -46,6 +47,11 @@ public class MoveAction extends Action {
 		actor.parent = Grid.current.get(targetPos);
 		//Now add it really
 		actor.parent.add(actor);
+		
+		//Check if this was the focusActor, if so, update FOV
+		if(actor == Grid.current.focusActor) {
+			FOV.refresh(true);
+		}
 		
 		//If the action was succesfull, return null (and deduct energy)
 		return super.perform();
