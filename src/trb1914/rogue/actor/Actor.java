@@ -3,7 +3,6 @@ package trb1914.rogue.actor;
 import trb1914.rogue.action.Action;
 import trb1914.rogue.action.MoveAction;
 import trb1914.rogue.ai.Faction;
-import trb1914.rogue.gfx.light.FOV;
 import trb1914.rogue.grid.Grid;
 import trb1914.rogue.grid.GridCell;
 import trb1914.rogue.grid.GridObject;
@@ -52,7 +51,6 @@ public class Actor extends GridObject{
 	 */
 	public void move(Int2D dir) {
 		nextAction = new MoveAction(this, dir);
-		//When we're the focusActor, also quickly update FOV
 	}
 	
 	/**

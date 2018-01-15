@@ -3,6 +3,7 @@ package trb1914.rogue.gfx.light;
 import java.util.ArrayList;
 
 import trb1914.rogue.grid.Grid;
+import trb1914.rogue.grid.MiniMap;
 import trb1914.rogue.math.Int2D;
 
 /**
@@ -98,6 +99,9 @@ public class FOV {
 					f.invalidate();
 				}
 			}
+			
+			//And at the end also update the minimap
+			MiniMap.current.update();
 		}
 	}
 	

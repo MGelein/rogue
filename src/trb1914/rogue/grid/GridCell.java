@@ -56,9 +56,9 @@ public class GridCell extends RenderAble{
 	 * Returns the color this tile should be on the minimap
 	 * @return
 	 */
-	public int getMiniMapColor() {
+	public int getMiniMapColor(boolean ignoreDiscovered) {
 		//If not discovered or there are no objects on this tile, return black
-		if(!discovered ||objects.size() < 1) return MiniMap.UNDISCOVERED;
+		if((!discovered && !ignoreDiscovered) ||objects.size() < 1) return MiniMap.UNDISCOVERED;
 		
 		//If this grid contains the focusActor, return a white dot
 		for(GridObject o : objects) if(o == grid.focusActor) return MiniMap.PLAYER;

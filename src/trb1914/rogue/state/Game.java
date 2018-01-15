@@ -14,7 +14,7 @@ public class Game extends GameState {
 	/** The Grid we're playing on */
 	private Grid grid;
 	/** The minimap*/
-	private MiniMap miniMap;
+	public MiniMap miniMap;
 
 	/**
 	 * Creates a new Game
@@ -34,7 +34,6 @@ public class Game extends GameState {
 	public void update(){
 		//First update all other elements
 		super.update();
-		miniMap.update();
 		//Then give control to focusActor
 		if(Key.isDownOnce(PConstants.ENTER)) grid.load();
 		if(Key.isDownOnce(PConstants.UP)) grid.focusActor.up();
