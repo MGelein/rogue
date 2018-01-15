@@ -26,13 +26,14 @@ public class Actor extends GridObject{
 	public float energy = 0;
 	
 	/** The amount of vision we have. Is the amount of tiles we can see in darkness*/
-	public float vision = 5;
+	public float vision = 8;
 	
 	/** The amount of energy received every time we're reached*/
 	public float speed = 10;
 	
 	/** The next action we're going to take. Null if we haven't selected an action yet*/
 	protected Action nextAction = null;
+	
 	
 	/**
 	 * Creates a new Actor at the specified position
@@ -53,19 +54,19 @@ public class Actor extends GridObject{
 	}
 	
 	/**
+	 * Updating the fov when necessary
+	 */
+	public void update() {
+		super.update();
+	}
+	
+	/**
 	 * Temporary override of the interact mechanism to allow possession
 	 */
 	public void interact(Actor actor) {
 		if(actor == Grid.current.focusActor) {
 			Grid.current.focusActor = this;
 		}
-	}
-	
-	/**
-	 * Calculates the FOV using an expanding tiles like LightSource and LightPoint
-	 */
-	public void calculateFOV() {
-		
 	}
 	
 	/** Moves the actor left*/

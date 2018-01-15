@@ -7,6 +7,7 @@ import trb1914.rogue.Rogue;
 import trb1914.rogue.actor.Actor;
 import trb1914.rogue.actor.Director;
 import trb1914.rogue.gen.DunGen;
+import trb1914.rogue.gfx.light.FOV;
 import trb1914.rogue.gfx.light.FOW;
 import trb1914.rogue.gfx.light.Light;
 import trb1914.rogue.interfaces.IUpdate;
@@ -132,6 +133,9 @@ public class Grid extends MouseAble implements IUpdate{
 		
 		//Now update all Actors
 		Director.update();
+		
+		//Update FOV of focus actor
+		FOV.refresh();
 	}
 
 	/**

@@ -24,6 +24,8 @@ public class GridCell extends RenderAble{
 	public int lighting;
 	/** how light this tile is. If it is 1 or over , it means this tile is fully lit, if it is zero or below it means this tile is fully dark*/
 	public float lightness = 0f;
+	/** Triggered if this tile has been discoverd by the focusActor*/
+	public boolean discovered = false;
 	
 	/** List of all objects in this cell*/
 	private ArrayList<GridObject> objects = new ArrayList<GridObject>();
@@ -31,6 +33,9 @@ public class GridCell extends RenderAble{
 	private ArrayList<GridObject> toAdd = new ArrayList<GridObject>();
 	/** List of all objects to be removed next update*/
 	private ArrayList<GridObject> toRemove = new ArrayList<GridObject>();
+	
+	/** Saves result of last render call for isvisible*/
+	private boolean visible = false;
 	
 	/**
 	 * Creates a new GridCell at the specified position with the specified grid
@@ -70,13 +75,13 @@ public class GridCell extends RenderAble{
 	 * @param viewPoint
 	 * @return
 	 */
-	boolean isVisible(){
+	protected boolean isVisible(){
 		//Offset our position to get  a 0,0 at the center of the screen
 		pos.x += Rogue.floor(Grid.COLS_VISIBLE / 2);
 		pos.y += Rogue.floor(Grid.ROWS_VISIBLE / 2);
 		
 		//By default assume we're visible
-		boolean visible = true;
+		visible = true;
 		if(pos.x - grid.viewPoint.x > Grid.COLS_VISIBLE|| pos.y - grid.viewPoint.y > Grid.ROWS_VISIBLE) visible = false;
 		else if(pos.x - grid.viewPoint.x < 0 || pos.y - grid.viewPoint.y < 0) visible = false;
 		
@@ -85,6 +90,14 @@ public class GridCell extends RenderAble{
 		pos.y-= Rogue.floor(Grid.ROWS_VISIBLE / 2);
 		
 		//Return the result: if we are visible
+		return visible;
+	}
+	
+	/**
+	 * Returns if this cell was rendered last time 
+	 * @return
+	 */
+	public boolean wasVisible() {
 		return visible;
 	}
 	
