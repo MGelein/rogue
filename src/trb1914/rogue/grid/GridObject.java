@@ -103,7 +103,7 @@ public class GridObject extends RenderAble{
 		walkable = DunGen.isWalkAble(dungeonTile);
 		opaque = DunGen.isOpaque(dungeonTile);
 		if(DunGen.isFloor(dungeonTile) || DunGen.isWall(dungeonTile)){
-			Textures.setTheme(Theme.temple);
+			Textures.setTheme(Theme.brick);
 		}
 
 		if(DunGen.isLiquid(dungeonTile)){
